@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Techno Traffix - Hệ Thống Theo Dõi Giao Thông AI</title>
+    <meta name="description"
+        content="Nền tảng AI thông minh để phân tích giao thông, phát hiện ùn tắc và cảnh báo tai nạn.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="logo/new.png">
+
+    <!-- Google Fonts - Roboto (widely used, reliable) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Flaticon UIicons for flag icon -->
+    <link rel='stylesheet'
+        href='https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+
+    <!-- Font Awesome (legacy) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/community.css">
+</head>
+
+<body>
+    <!-- Header with Integrated Navigation -->
+    <header class="header">
+        <div class="container header__inner">
+            <a href="#" class="header__logo">
+                <img src="logo/new.png" alt="Techno Traffix" class="header__logo-img">
+                <span>Techno Traffix</span>
+            </a>
+
+            <!-- Main Navigation with Tabs -->
+            <nav class="header__nav" id="main-nav" role="tablist">
+                <a href="#overview" class="nav-tab nav-tab--active" data-tab="overview" role="tab">
+                    <svg class="nav-tab__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span>Tổng Quan</span>
+                </a>
+                <a href="#analysis" class="nav-tab" data-tab="analysis" role="tab">
+                    <svg class="nav-tab__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span>Phân Tích AI</span>
+                </a>
+                <a href="#traffic" class="nav-tab" data-tab="traffic" role="tab">
+                    <svg class="nav-tab__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                    </svg>
+                    <span>Bản Đồ</span>
+                </a>
+                <a href="#air" class="nav-tab" data-tab="air" role="tab">
+                    <svg class="nav-tab__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                    </svg>
+                    <span>Không Khí</span>
+                </a>
+                <a href="#community" class="nav-tab" data-tab="community" role="tab">
+                    <svg class="nav-tab__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span>Cộng Đồng</span>
+                </a>
+            </nav>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="header__mobile-toggle" id="mobile-menu-toggle" aria-label="Menu">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section - Chỉ hiển thị ở tab Overview -->
+    <!-- Global Particle Canvas -->
+    <canvas id="hero-particles"></canvas>
+
+    <section class="hero" id="hero-section">
+        <div class="hero__background">
+            <!-- Floating Decorative Images -->
+
+            <!-- Top-left -->
+            <div class="hero__floating hero__floating--left">
+                <img src="logo/fl1.jpg" alt="" class="hero__floating-img">
+            </div>
+
+            <!-- Top-right -->
+            <div class="hero__floating hero__floating--right">
+                <img src="logo/fl2.jpg" alt="" class="hero__floating-img">
+            </div>
+
+            <!-- Bottom-left -->
+            <div class="hero__floating hero__floating--bottom-left">
+                <img src="logo/fl3.jpg" alt="" class="hero__floating-img">
+            </div>
+
+            <!-- Bottom-right -->
+            <div class="hero__floating hero__floating--bottom-right">
+                <img src="logo/fl4.jpg" alt="" class="hero__floating-img">
+            </div>
+        </div>
+        <div class="container">
+            <div class="hero__content">
+                <h1 class="hero__title animate-fade-in-up">
+                    Hệ thống phân tích giao thông AI<br>
+                    <!-- <span class="text-gradient">tất cả trong một nền tảng</span> -->
+                </h1>
+                <p class="hero__subtitle animate-fade-in-up" style="animation-delay: 0.1s;">
+                    Phát hiện sớm vấn đề, tối ưu điều phối và nâng cao an toàn giao thông
+                    với sức mạnh của AI và dữ liệu thực tế.
+                </p>
+                <div class="hero__actions animate-fade-in-up" style="animation-delay: 0.2s;">
+                    <a href="#analysis" class="btn btn--primary" data-tab="analysis">
+                        <svg class="btn__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Khám phá Nền tảng
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer inside Hero Section -->
+        <footer class="hero__footer">
+            <p>Techno Traffix - Hệ Thống Theo Dõi Giao Thông AI 2026</p>
+        </footer>
+    </section>
+
+    <!-- Main Content - Full Page khi không phải Overview -->
+    <main class="main-content" id="main-content">
+        <!-- Tab Panels Container - Khung chứa chính với position relative -->
+        <div class="tab-panels-container container">
+            <!-- Tab: Overview -->
+            <section id="tab-overview" class="tab-panel tab-panel--active">
+                <!-- Overview content will be displayed in hero section -->
+            </section>
+
+            <!-- Tab: AI Analysis -->
+            <section id="tab-analysis" class="tab-panel">
+                <h3 class="mb-2">Phân Tích AI Giao Thông</h3>
+                <p class="mb-3" style="color: var(--text-secondary);">
+                    Hệ thống tự động phát hiện mật độ giao thông và cảnh báo tai nạn từ ảnh hoặc video.
+                </p>
+
+                <!-- Upload Zone -->
+                <div class="upload-zone mb-3" id="upload-zone">
+                    <svg class="upload-zone__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p class="upload-zone__text">Kéo thả hoặc nhấn để chọn file</p>
+                    <p class="upload-zone__hint">Hỗ trợ ảnh (JPG, PNG) và video (MP4, WebM)</p>
+                    <input type="file" id="media-input" accept="image/*,video/*" style="display: none;">
+                </div>
+
+                <div class="text-center mb-3">
+                    <button class="btn btn--gradient" id="analyze-btn" disabled>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        Phân Tích
+                    </button>
+                </div>
+
+                <!-- Loading State -->
+                <div class="text-center hidden" id="loading-state">
+                    <div class="spinner" style="margin: 0 auto;"></div>
+                    <p class="mt-2" style="color: var(--text-secondary);">Đang xử lý... Vui lòng đợi</p>
+                </div>
+
+                <!-- Results -->
+                <div class="hidden" id="results-section">
+                    <h4 class="mb-2">Kết Quả Phân Tích AI</h4>
+
+                    <div class="results-grid mb-3 stagger-children">
+                        <div class="result-card result-card--success" id="result-traffic">
+                            <div class="result-card__label">Tình trạng giao thông</div>
+                            <div class="result-card__value">...</div>
+                        </div>
+                        <div class="result-card" id="result-accident">
+                            <div class="result-card__label">Cảnh báo tai nạn</div>
+                            <div class="result-card__value">...</div>
+                        </div>
+                    </div>
+
+                    <!-- Media Display -->
+                    <div class="media-display" id="media-display">
+                        <img id="result-image" src="" alt="Kết quả phân tích" style="display: none;">
+                        <video id="result-video" controls style="display: none;"></video>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab: Traffic Density -->
+            <section id="tab-traffic" class="tab-panel">
+                <h3 class="mb-2">Giám sát Mật độ Giao thông</h3>
+                <p class="mb-3" style="color: var(--text-secondary);">
+                    Bản đồ trực quan hiển thị các điểm ùn tắc giao thông theo thời gian thực.
+                </p>
+                <div class="map-container" id="map-traffic"></div>
+            </section>
+
+            <!-- Tab: Air Quality -->
+            <section id="tab-air" class="tab-panel">
+                <h3 class="mb-2">Chỉ số Chất lượng Không khí (AQI)</h3>
+                <p class="mb-3" style="color: var(--text-secondary);">
+                    Theo dõi chất lượng không khí tại các khu vực trong thành phố.
+                </p>
+                <div class="map-container" id="map-air"></div>
+            </section>
+
+            <!-- Tab: Community -->
+            <section id="tab-community" class="tab-panel">
+                <div class="community-feed" id="community-feed">
+                    <!-- Header -->
+                    <div class="community-header">
+                        <h3>Cộng đồng Giao thông</h3>
+                        <p>Chia sẻ tình hình giao thông, cùng nhau cập nhật thông tin đường phố</p>
+                    </div>
+
+                    <!-- Create post trigger -->
+                    <div class="create-post-trigger" id="create-post-trigger">
+                        <div class="create-post-trigger__avatar" id="trigger-avatar">B</div>
+                        <div class="create-post-trigger__input">Bạn đang nghĩ gì về giao thông?</div>
+                    </div>
+
+                    <!-- Posts container -->
+                    <div id="posts-container"></div>
+
+                    <!-- Load more -->
+                    <div class="community-load-more hidden" id="load-more-area">
+                        <button id="load-more-btn">Xem thêm bài viết</button>
+                    </div>
+
+                    <!-- Empty state -->
+                    <div class="community-empty hidden" id="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <h4>Chưa có bài viết nào</h4>
+                        <p>Hãy là người đầu tiên chia sẻ thông tin giao thông!</p>
+                    </div>
+                </div>
+            </section>
+        </div><!-- End .tab-panels-container -->
+    </main>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget" id="chat-widget">
+        <div class="chat-popup" id="chat-popup">
+            <div class="chat-header">
+                <span class="chat-header__title">
+                    <span
+                        style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block;"></span>
+                    AI Giao Thông
+                </span>
+                <button class="chat-header__close" id="chat-close">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <!-- Messages will be populated by JavaScript -->
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chat-input" placeholder="Hỏi về giao thông..."
+                    autocomplete="off">
+                <button class="chat-send" id="chat-send">
+                    <i class="fi fi-rr-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+        <button class="chat-fab" id="chat-fab">
+            <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Techno Traffix - Hệ Thống Theo Dõi Giao Thông AI 2026</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

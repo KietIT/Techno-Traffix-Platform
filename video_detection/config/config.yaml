@@ -1,0 +1,169 @@
+# Video Detection Module Configuration - OPTIMIZED FOR VIETNAM TRAFFIC
+# Optimized for: Fixed traffic cameras, high motorcycle density, high precision
+
+# Model Configuration
+model:
+  path: "yolov8l.pt"  # Path to YOLOv8 model (can be changed to yolov9, yolov10, etc.)
+  conf_threshold: 0.25  # LOWERED from 0.5 - catch small/distant/occluded vehicles
+  iou_threshold: 0.55   # INCREASED from 0.45 - keep more vehicles that are close together
+  device: "cpu"  # cuda or cpu (use cpu for cloud deployment without GPU)
+  
+  # Class-specific confidence thresholds (motorcycles need lower threshold)
+  class_conf_thresholds:
+    motorcycle: 0.20  # Lower threshold for motorcycles (small objects)
+    car: 0.30
+    truck: 0.35
+    bus: 0.35
+  
+  # Size filtering to reduce false positives
+  min_box_area: 400       # Minimum detection area in pixels (20x20)
+  max_box_area: 500000    # Maximum detection area (filter out full-frame errors)
+  min_aspect_ratio: 0.3   # Min width/height ratio
+  max_aspect_ratio: 4.0   # Max width/height ratio
+
+# Target Classes to Detect
+classes:
+  vehicle:
+    - "car"
+    - "truck"
+    - "motorcycle"
+    - "bus"
+  emergency:
+    - "ambulance"
+
+# Tracking Configuration
+tracker:
+  type: "bytetrack"  # ByteTrack tracker
+  track_thresh: 0.4   # LOWERED from 0.5 - track more objects
+  track_buffer: 50    # INCREASED from 30 - keep tracks longer for occlusion handling
+  match_thresh: 0.85  # INCREASED from 0.8 - stricter matching to reduce ID switches
+  
+  # New: Track quality settings
+  min_track_length: 5  # Minimum frames to consider a valid track
+  max_time_lost: 30    # Frames to keep lost track before deletion
+
+# Speed Estimation Configuration
+speed_estimation:
+  enabled: true
+  history_length: 20    # INCREASED from 15 - smoother speed estimation
+  fps: 30  # Default FPS (will be overridden by video FPS)
+  pixels_per_meter: 50  # Approximate pixels per meter (needs calibration per camera)
+  heading_history_length: 20  # INCREASED from 15 - better trajectory analysis
+  
+  # New: Acceleration calculation for accident detection
+  acceleration_window: 5  # Frames to calculate acceleration
+  smooth_window: 3        # Moving average window for noise reduction
+
+# Accident Detection Configuration - 4-STAGE HIGH-PRECISION LOGIC
+accident_detection:
+  enabled: true
+  
+  # Stage 1: Proximity Detection (broad filter)
+  proximity:
+    iou_threshold: 0.05        # Very low - just detect when bboxes are close
+    distance_threshold: 100    # Pixels - centroid distance for proximity event
+    min_frames: 2              # Frames to register proximity
+  
+  # Stage 2: Collision Candidate (IOU + velocity analysis)
+  collision:
+    iou_threshold: 0.15        # LOWERED from 0.4 - catches glancing collisions
+    min_frames: 5              # INCREASED from 3 - more confirmation needed
+    require_movement: true     # Both vehicles must have been moving
+    min_speed_for_collision: 5 # LOWERED from 8 - catch slower collisions
+    
+    # NEW: Velocity-based collision indicators
+    velocity_change_threshold: 0.4  # 40% velocity change indicates impact
+    heading_change_threshold: 20    # Degrees - direction change after impact
+    require_both_affected: true     # Both vehicles must show impact signs
+  
+  # Stage 3: Post-Collision Behavior Analysis (KEY FOR HIGH PRECISION)
+  post_collision:
+    enabled: true
+    analysis_window: 90        # Frames to analyze after collision candidate (3 sec at 30fps)
+    
+    # Confirmation criteria (need at least 2 of these)
+    stop_speed_threshold: 2    # Speed below this = stopped
+    slow_speed_threshold: 5    # Speed below this = very slow
+    min_stop_duration: 30      # Frames that vehicle stays stopped/slow
+    
+    # Trajectory divergence after collision
+    divergence_threshold: 50   # Pixels - vehicles should separate after real collision
+    
+  # Stage 4: Final Confirmation (multi-indicator voting)
+  confirmation:
+    min_indicators: 3          # Need at least 3 of 5 indicators to confirm accident
+    # Indicators: IOU contact, velocity drop, heading change, post-stop, trajectory divergence
+    
+    # Confidence scoring
+    high_confidence_indicators: 4
+    medium_confidence_indicators: 3
+  
+  # Trajectory Anomaly Detection (for sideswipe/glancing collisions)
+  trajectory_anomaly:
+    enabled: true
+    heading_change_threshold: 35  # INCREASED from 25 - must be very significant
+    min_speed_for_trajectory: 8   # LOWERED from 10
+    proximity_threshold: 120      # REDUCED from 150
+    window_frames: 3              # REDUCED from 5 - instant change only
+    
+    # Improved filters
+    curve_tolerance_degrees: 20   # INCREASED from 15 - more tolerance for curves
+    opposite_dir_iou_threshold: 0.08  # INCREASED from 0.05
+    
+    # NEW: Synchronous movement filter
+    sync_heading_tolerance: 25    # If both vehicles turn similarly, not an accident
+    sync_speed_tolerance: 0.3     # 30% speed difference tolerance for sync movement
+  
+  # Sudden Stop Detection (STRICTER for high precision)
+  sudden_stop:
+    enabled: false              # DISABLED - too many false positives from traffic lights
+    speed_drop_ratio: 0.90      # INCREASED from 0.85 - must be extreme
+    min_speed_before_stop: 40   # INCREASED from 30
+    max_speed_after_stop: 2     # REDUCED from 3
+    window_frames: 8            # REDUCED from 10
+    
+    # NEW: Require nearby vehicle for sudden stop to count
+    require_proximity: true
+    proximity_distance: 150
+  
+  # Stationary Detection (DISABLED)
+  stationary:
+    enabled: false              # DISABLED - traffic lights cause false positives
+    max_stationary_time: 60.0   # Very long if enabled
+    speed_threshold: 1
+
+  # False Positive Filters
+  false_positive_filters:
+    # Zone-based filtering (for traffic lights, parking areas)
+    enable_zone_filtering: false  # Enable if you define stop zones
+    stop_zones: []                # List of (x1,y1,x2,y2) zones to ignore
+    
+    # Movement pattern filters
+    filter_parallel_movement: true   # Filter vehicles moving same direction/speed
+    parallel_heading_tolerance: 15   # Degrees
+    parallel_speed_tolerance: 0.25   # 25% speed difference
+    
+    # Size-based collision filtering
+    min_vehicle_size_ratio: 0.1  # Smaller/larger vehicle size ratio
+    max_vehicle_size_ratio: 10.0
+
+# Video IO Configuration
+video_io:
+  default_fps: 30
+  resize_width: 1920    # INCREASED from 1280 - better small object detection
+  resize_height: 1080   # INCREASED from 720
+  
+  # Alternative: keep original resolution if GPU memory allows
+  # resize_width: null
+  # resize_height: null
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  save_to_file: true
+  log_file: "video_detection.log"
+  
+  # Accident event logging
+  log_accident_details: true
+  save_accident_frames: true
+  accident_frames_dir: "accident_frames"

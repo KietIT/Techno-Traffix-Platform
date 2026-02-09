@@ -1,0 +1,163 @@
+/* Custom CSS for Nova Traffix Smart City Monitoring System */
+
+body { 
+    font-family: 'Inter', sans-serif; 
+}
+
+.post-feed-container { 
+    max-height: 55vh; 
+    overflow-y: auto; 
+}
+
+.tab-content { 
+    display: none; 
+}
+
+.active-tab-content { 
+    display: block; 
+}
+
+.leaflet-container { 
+    height: 650px; 
+    width: 100%; 
+    border-radius: 0.75rem; 
+    z-index: 1; 
+}
+
+.chart-container {
+    position: relative;
+    height: 280px;
+    width: 100%;
+}
+
+/* Animation for traffic congestion lines */
+.traffic-pulse {
+    animation: dash 20s linear infinite;
+}
+
+/* Chat interface styles */
+.chat-container {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 1rem;
+    background-color: #f9fafb;
+    border-radius: 0.75rem;
+}
+
+.chat-message {
+    margin-bottom: 0.75rem;
+    padding: 0.625rem 0.875rem;
+    border-radius: 1rem;
+    max-width: 85%;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.chat-message.user {
+    background-color: #2563EB;
+    color: white;
+    margin-left: auto;
+    text-align: left;
+    border-bottom-right-radius: 0.25rem;
+}
+
+.chat-message.bot {
+    background-color: #F3F4F6;
+    color: #1F2937;
+    margin-right: auto;
+    border-bottom-left-radius: 0.25rem;
+}
+
+.chat-message.bot.warning {
+    background-color: #FEF3C7;
+    border-left: 3px solid #F59E0B;
+}
+
+.chat-input-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
+}
+
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background-color: #9CA3AF;
+    border-radius: 50%;
+    animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+    30% {
+        opacity: 1;
+        transform: translateY(-10px);
+    }
+}
+
+/* Loading Spinner for Video Analysis */
+.spinner {
+    border: 6px solid #f3f4f6;
+    border-top: 6px solid #2563EB;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Video Analysis Section Styles */
+#content-video .bg-blue-50 {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Smooth transitions for result cards */
+#results-section {
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+

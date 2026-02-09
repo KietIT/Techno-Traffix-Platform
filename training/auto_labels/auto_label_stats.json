@@ -1,0 +1,11 @@
+{
+  "total_images": 281,
+  "images_with_detections": 244,
+  "total_detections": 2409,
+  "car": 775,
+  "truck": 1048,
+  "motorcycle": 420,
+  "bus": 166,
+  "ambulance": 0,
+  "errors": 0
+}

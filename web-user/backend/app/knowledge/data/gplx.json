@@ -1,0 +1,271 @@
+{
+  "metadata": {
+    "title": "Thông tin Giấy phép lái xe Việt Nam (Luật 2024)",
+    "version": "2025.2",
+    "effective_date": "2025-01-01",
+    "source": "Luật Trật tự an toàn giao thông đường bộ số 36/2024/QH15",
+    "last_updated": "2025-01-01"
+  },
+  "license_classes": [
+    {
+      "class": "A1",
+      "description": "Xe mô tô hai bánh có dung tích xi lanh đến 125 cm3 hoặc công suất động cơ điện đến 11 kW",
+      "age_requirement": 18,
+      "vehicles_allowed": [
+        "Xe máy đến 125cc",
+        "Xe máy điện đến 11kW"
+      ],
+      "validity_years": null,
+      "note": "Không thời hạn",
+      "keywords": [
+        "A1",
+        "bằng A1",
+        "xe máy nhỏ",
+        "dưới 125cc"
+      ]
+    },
+    {
+      "class": "A",
+      "description": "Xe mô tô hai bánh có dung tích xi lanh trên 125 cm3 hoặc công suất trên 11 kW; các loại xe hạng A1",
+      "age_requirement": 18,
+      "vehicles_allowed": [
+        "Xe máy trên 125cc",
+        "Xe phân khối lớn",
+        "Xe hạng A1"
+      ],
+      "validity_years": null,
+      "note": "Thay thế hạng A2 cũ. Không thời hạn.",
+      "keywords": [
+        "A",
+        "bằng A",
+        "phân khối lớn",
+        "PKL",
+        "trên 125cc",
+        "A2 cũ"
+      ]
+    },
+    {
+      "class": "B1",
+      "description": "Xe mô tô ba bánh và các loại xe quy định cho hạng A1",
+      "age_requirement": 18,
+      "vehicles_allowed": [
+        "Xe mô tô ba bánh",
+        "Xe hạng A1"
+      ],
+      "validity_years": null,
+      "note": "LƯU Ý: Hạng B1 MỚI là lái xe 3 bánh. KHÔNG PHẢI lái ô tô số tự động như luật cũ.",
+      "keywords": [
+        "B1",
+        "bằng B1",
+        "xe ba bánh",
+        "mô tô ba bánh"
+      ]
+    },
+    {
+      "class": "B",
+      "description": "Xe ô tô chở người đến 08 chỗ (không kể người lái); xe tải đến 3.500 kg; xe kéo rơ moóc đến 750 kg",
+      "age_requirement": 18,
+      "vehicles_allowed": [
+        "Ô tô con đến 8 chỗ",
+        "Xe tải đến 3.5 tấn",
+        "Xe kéo rơ moóc nhỏ"
+      ],
+      "validity_years": 10,
+      "note": "Gộp hạng B1 (ô tô cũ) và B2 cũ. Cấp cho cả người hành nghề và không hành nghề lái xe.",
+      "keywords": [
+        "B",
+        "bằng B",
+        "ô tô con",
+        "xe hơi",
+        "lái xe văn phòng",
+        "B2 cũ"
+      ]
+    },
+    {
+      "class": "C1",
+      "description": "Xe ô tô tải từ 3.500 kg đến 7.500 kg; xe quy định cho hạng B",
+      "age_requirement": 21,
+      "vehicles_allowed": [
+        "Xe tải 3.5 - 7.5 tấn",
+        "Xe hạng B"
+      ],
+      "validity_years": 10,
+      "keywords": [
+        "C1",
+        "bằng C1",
+        "xe tải trung"
+      ]
+    },
+    {
+      "class": "C",
+      "description": "Xe ô tô tải trên 7.500 kg; xe quy định cho hạng C1",
+      "age_requirement": 24,
+      "vehicles_allowed": [
+        "Xe tải trên 7.5 tấn",
+        "Xe hạng C1"
+      ],
+      "validity_years": 10,
+      "keywords": [
+        "C",
+        "bằng C",
+        "xe tải nặng",
+        "xe tải lớn"
+      ]
+    },
+    {
+      "class": "D1",
+      "description": "Xe ô tô chở người từ trên 08 đến 29 chỗ (không kể người lái); các xe hạng B, C1, C",
+      "age_requirement": 24,
+      "vehicles_allowed": [
+        "Xe khách 8-29 chỗ"
+      ],
+      "validity_years": 5,
+      "keywords": [
+        "D1",
+        "bằng D1",
+        "xe khách nhỏ",
+        "xe 16 chỗ",
+        "xe 29 chỗ"
+      ]
+    },
+    {
+      "class": "D2",
+      "description": "Xe ô tô chở người từ trên 29 chỗ; các xe hạng B, C1, C, D1",
+      "age_requirement": 27,
+      "vehicles_allowed": [
+        "Xe khách trên 29 chỗ",
+        "Xe buýt"
+      ],
+      "validity_years": 5,
+      "keywords": [
+        "D2",
+        "bằng D2",
+        "xe khách lớn",
+        "xe 45 chỗ",
+        "xe giường nằm"
+      ]
+    },
+    {
+      "class": "D",
+      "description": "Xe ô tô chở người từ trên 29 chỗ và xe giường nằm; các xe hạng B, C1, C, D1, D2",
+      "age_requirement": 27,
+      "vehicles_allowed": [
+        "Tất cả các loại xe khách",
+        "Xe giường nằm"
+      ],
+      "validity_years": 5,
+      "keywords": [
+        "D",
+        "bằng D",
+        "xe khách",
+        "tất cả xe khách"
+      ]
+    },
+    {
+      "class": "BE",
+      "description": "Xe hạng B kéo rơ moóc trên 750 kg",
+      "age_requirement": 18,
+      "vehicles_allowed": [
+        "Xe hạng B kéo rơ moóc lớn"
+      ],
+      "validity_years": 10,
+      "keywords": [
+        "BE",
+        "bằng BE",
+        "kéo rơ moóc"
+      ]
+    },
+    {
+      "class": "C1E",
+      "description": "Xe hạng C1 kéo rơ moóc trên 750 kg",
+      "age_requirement": 21,
+      "vehicles_allowed": [
+        "Xe hạng C1 kéo rơ moóc lớn"
+      ],
+      "validity_years": 10,
+      "keywords": [
+        "C1E",
+        "bằng C1E"
+      ]
+    },
+    {
+      "class": "CE",
+      "description": "Xe hạng C kéo rơ moóc trên 750 kg",
+      "age_requirement": 24,
+      "vehicles_allowed": [
+        "Xe đầu kéo",
+        "Xe container"
+      ],
+      "validity_years": 10,
+      "keywords": [
+        "CE",
+        "bằng CE",
+        "container",
+        "đầu kéo",
+        "FC cũ"
+      ]
+    },
+    {
+      "class": "D1E",
+      "description": "Xe hạng D1 kéo rơ moóc trên 750 kg",
+      "age_requirement": 24,
+      "vehicles_allowed": [
+        "Xe hạng D1 kéo rơ moóc"
+      ],
+      "validity_years": 5,
+      "keywords": [
+        "D1E",
+        "bằng D1E"
+      ]
+    },
+    {
+      "class": "D2E",
+      "description": "Xe hạng D2 kéo rơ moóc trên 750 kg",
+      "age_requirement": 27,
+      "vehicles_allowed": [
+        "Xe hạng D2 kéo rơ moóc"
+      ],
+      "validity_years": 5,
+      "keywords": [
+        "D2E",
+        "bằng D2E"
+      ]
+    },
+    {
+      "class": "DE",
+      "description": "Xe hạng D kéo rơ moóc trên 750 kg; xe khách nối toa",
+      "age_requirement": 27,
+      "vehicles_allowed": [
+        "Xe khách nối toa",
+        "Xe hạng D kéo rơ moóc"
+      ],
+      "validity_years": 5,
+      "keywords": [
+        "DE",
+        "bằng DE"
+      ]
+    }
+  ],
+  "upgrade_paths": [
+    {
+      "from": "A1",
+      "to": "A",
+      "time_required": "Không yêu cầu thâm niên, thi đạt là được cấp"
+    },
+    {
+      "from": "B",
+      "to": "C1",
+      "time_required": "Đủ 21 tuổi, đủ thâm niên lái xe"
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "time_required": "Đủ 24 tuổi, đủ thâm niên lái xe"
+    },
+    {
+      "from": "C1",
+      "to": "C",
+      "time_required": "Đủ thời gian hành nghề"
+    }
+  ]
+}

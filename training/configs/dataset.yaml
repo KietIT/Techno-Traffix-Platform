@@ -1,0 +1,47 @@
+# Vietnam Traffic Dataset Configuration for YOLO Training
+# This file defines the dataset structure and class labels
+
+# Dataset paths (relative to this file or absolute)
+# On Kaggle, these will be set to /kaggle/working/dataset/...
+path: ./vietnam_traffic_dataset  # Root directory
+train: images/train              # Training images (relative to path)
+val: images/val                  # Validation images (relative to path)
+test: images/test                # Test images (optional, relative to path)
+
+# Number of classes
+nc: 5
+
+# Class names - ORDER MATTERS (must match label indices 0-4)
+names:
+  0: car
+  1: truck
+  2: motorcycle
+  3: bus
+  4: ambulance
+
+# Class descriptions for reference
+# car: All passenger vehicles (sedan, SUV, hatchback, etc.)
+# truck: Freight vehicles (pickup trucks, delivery trucks, semi-trucks)
+# motorcycle: Two-wheeled vehicles including motorbikes and bicycles
+# bus: Public transport buses and coaches
+# ambulance: Emergency medical vehicles (with or without lights on)
+
+# Dataset statistics (update after labeling)
+# train_images: ~1200
+# val_images: ~300
+# test_images: ~200
+
+# Augmentation settings (used in training notebook)
+augmentation:
+  hsv_h: 0.015      # HSV-Hue augmentation
+  hsv_s: 0.7        # HSV-Saturation augmentation
+  hsv_v: 0.4        # HSV-Value augmentation
+  degrees: 0.0      # Rotation (disabled for traffic cameras)
+  translate: 0.1    # Translation
+  scale: 0.5        # Scale augmentation
+  shear: 0.0        # Shear (disabled)
+  perspective: 0.0  # Perspective (disabled for fixed cameras)
+  flipud: 0.0       # Vertical flip (disabled - cars don't flip)
+  fliplr: 0.5       # Horizontal flip
+  mosaic: 1.0       # Mosaic augmentation
+  mixup: 0.0        # MixUp augmentation

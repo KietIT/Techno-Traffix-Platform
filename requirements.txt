@@ -1,0 +1,24 @@
+# Techno Traffix - Combined Requirements for Render Deployment
+# This file combines dependencies from web-user/backend and video_detection
+
+# Web Framework
+flask>=2.3.0
+flask-cors>=4.0.0
+gunicorn>=21.0.0
+
+# AI/ML - YOLO and Computer Vision
+ultralytics>=8.0.0
+opencv-python-headless>=4.8.0  # headless version for server deployment
+
+# AI Chat Service
+anthropic>=0.18.0
+python-dotenv>=1.0.0
+
+# Utilities
+requests>=2.31.0
+pyyaml>=6.0.0
+numpy>=1.24.0
+
+# Tracking (ByteTrack dependencies)
+scipy>=1.10.0
+lap>=0.4.0

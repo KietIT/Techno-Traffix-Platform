@@ -1,0 +1,151 @@
+# ===========================================
+# Python
+# ===========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+eggs/
+*.egg
+.installed.cfg
+*.manifest
+*.spec
+
+# ===========================================
+# Virtual Environment
+# ===========================================
+.env
+.env.local
+.env.*.local
+.venv/
+venv/
+ENV/
+env/
+.python-version
+
+# ===========================================
+# IDE & Editors
+# ===========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.spyderproject
+.spyproject
+*.sublime-workspace
+*.sublime-project
+
+# ===========================================
+# OS Generated Files
+# ===========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ===========================================
+# Logs & Temp Files
+# ===========================================
+*.log
+logs/
+*.tmp
+*.temp
+*.bak
+
+# ===========================================
+# AI/ML Agent Folders
+# ===========================================
+.claude/
+.agent/
+.gemini/
+
+# ===========================================
+# Dataset & Large Files
+# ===========================================
+dataset/
+datasets/
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.npy
+*.npz
+
+# ===========================================
+# Model Files (Large)
+# ===========================================
+vietnam_traffic_models/
+*.pt
+*.pth
+*.onnx
+*.weights
+*.caffemodel
+*.pb
+
+# ===========================================
+# Uploads & Processed Files
+# ===========================================
+web-user/backend/app/static/uploads/
+web-user/backend/app/static/processed/
+web-user/backend/runs/
+
+# ===========================================
+# Data Files (User Generated)
+# ===========================================
+web-user/backend/app/data/posts.json
+
+# ===========================================
+# Node.js (if applicable)
+# ===========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# ===========================================
+# Testing & Coverage
+# ===========================================
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# ===========================================
+# Jupyter Notebooks
+# ===========================================
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ===========================================
+# Docker
+# ===========================================
+*.env.docker
+docker-compose.override.yml
+
+# ===========================================
+# Misc
+# ===========================================
+*.bak
+*.cache
+.cache/
+*.pid
+*.seed
+*.pid.lock
