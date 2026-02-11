@@ -342,7 +342,7 @@ class TopicValidator:
 
     # Rejection response templates
     REJECTION_RESPONSES = {
-        "default": """Xin lỗi, tôi là **NOVA TRAFFIX** - trợ lý chuyên về Luật An toàn giao thông đường bộ Việt Nam.
+        "default": """Xin lỗi, tôi là **TECHNO TRAFFIX** — trợ lý chuyên về Luật An toàn giao thông đường bộ Việt Nam.
 
 Tôi chỉ có thể hỗ trợ các câu hỏi về:
 - 🚗 Mức phạt vi phạm giao thông (Nghị định 168/2024)
@@ -351,24 +351,24 @@ Tôi chỉ có thể hỗ trợ các câu hỏi về:
 - 🍺 Quy định về nồng độ cồn
 - ⚡ Tốc độ và biển báo giao thông
 
-Bạn có câu hỏi gì về giao thông không?""",
+Bạn có câu hỏi gì về giao thông không? **TECHNO TRAFFIX** luôn sẵn sàng hỗ trợ!""",
         "greeting": """Xin chào! 👋
 
-Tôi là **NOVA TRAFFIX** - Trợ lý Luật An toàn giao thông đường bộ Việt Nam.
+Tôi là **TECHNO TRAFFIX** — Trợ lý Luật An toàn giao thông đường bộ Việt Nam.
 
-Tôi có thể giúp bạn:
+**TECHNO TRAFFIX** có thể giúp bạn:
 - 📖 Tra cứu mức phạt vi phạm giao thông (theo NĐ 168/2024)
 - 🪪 Thông tin về GPLX và hệ thống trừ điểm (từ 01/01/2025)
 - 🚗 Quy định tốc độ, nồng độ cồn
 - 🚦 Các quy tắc giao thông đường bộ khác
 
-Hãy hỏi tôi bất cứ điều gì về luật giao thông!""",
+Hãy hỏi **TECHNO TRAFFIX** bất cứ điều gì về luật giao thông!""",
         "thanks": """Không có chi! 😊
 
-Nếu bạn có thêm câu hỏi về luật giao thông, đừng ngại hỏi tôi nhé!""",
+**TECHNO TRAFFIX** luôn sẵn sàng hỗ trợ bạn. Nếu có thêm câu hỏi về luật giao thông, đừng ngại hỏi nhé!""",
         "goodbye": """Tạm biệt! 👋
 
-Chúc bạn lái xe an toàn! Nhớ tuân thủ luật giao thông nhé! 🚗✨""",
+**TECHNO TRAFFIX** chúc bạn lái xe an toàn! Nhớ tuân thủ luật giao thông nhé! 🚗✨""",
     }
 
     def __init__(self):

@@ -137,16 +137,16 @@ class ChatService:
         """Generate a mock response when LLM is not available."""
         # Extract some context from RAG if present in prompt
         if "THÔNG TIN VI PHẠM" in prompt:
-            return """Dựa trên thông tin từ cơ sở dữ liệu, tôi sẽ trả lời câu hỏi của bạn.
+            return """Dựa trên thông tin từ cơ sở dữ liệu, **TECHNO TRAFFIX** sẽ trả lời câu hỏi của bạn.
 
-⚠️ **Lưu ý**: Đây là chế độ demo (không có kết nối LLM). 
+⚠️ **Lưu ý**: Đây là chế độ demo (không có kết nối LLM).
 Để có câu trả lời chính xác và đầy đủ, vui lòng cấu hình API key cho OpenAI hoặc Anthropic.
 
 Bạn có thể tham khảo thông tin chi tiết tại: thuvienphapluat.vn"""
 
-        return """Cảm ơn bạn đã hỏi về luật giao thông!
+        return """Cảm ơn bạn đã hỏi **TECHNO TRAFFIX** về luật giao thông!
 
-⚠️ **Chế độ Demo**: Hiện tại chatbot đang chạy ở chế độ demo (không có LLM API).
+⚠️ **Chế độ Demo**: Hiện tại **TECHNO TRAFFIX** đang chạy ở chế độ demo (không có LLM API).
 Để được hỗ trợ đầy đủ, vui lòng cấu hình biến môi trường:
 - `OPENAI_API_KEY` cho OpenAI
 - `ANTHROPIC_API_KEY` cho Anthropic
@@ -155,14 +155,14 @@ Bạn vẫn có thể xem thông tin từ cơ sở dữ liệu trong phần ngu�
 
     def _generate_fallback_response(self) -> str:
         """Generate fallback response when LLM fails."""
-        return """Xin lỗi, hiện tại tôi đang gặp sự cố kỹ thuật và không thể trả lời chi tiết.
+        return """**TECHNO TRAFFIX** xin lỗi, hiện tại đang gặp sự cố kỹ thuật và không thể trả lời chi tiết.
 
 Bạn có thể:
 1. Thử lại sau vài phút
 2. Tra cứu trực tiếp tại: thuvienphapluat.vn
 3. Liên hệ cơ quan chức năng để được tư vấn chính xác
 
-Xin cảm ơn sự thông cảm của bạn!"""
+**TECHNO TRAFFIX** xin cảm ơn sự thông cảm của bạn!"""
 
     def _convert_search_results_to_sources(self, search_results: Dict[str, Any]) -> List[SourceReference]:
         """Convert RAG search results to SourceReference objects."""
@@ -328,7 +328,7 @@ Xin cảm ơn sự thông cảm của bạn!"""
 
         # Add footer note
         response_parts.append("---")
-        response_parts.append("*Thông tin được trích xuất trực tiếp từ cơ sở dữ liệu luật giao thông Việt Nam.*")
+        response_parts.append("*Thông tin được **TECHNO TRAFFIX** trích xuất trực tiếp từ cơ sở dữ liệu luật giao thông Việt Nam.*")
 
         return "\n".join(response_parts)
 
