@@ -20,9 +20,28 @@ from video_io.video_reader import VideoReader, FrameInfo
 from tracker.bytetrack_tracker import ByteTrackTracker, TrackedObject
 from speed_estimation.speed_estimator import SpeedEstimator, SpeedInfo
 from accident_detection.rule_based import AccidentDetector, AccidentEvent
+from pipeline.vehicle_counter import VehicleCounter, CountResult
 
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class RunResult:
+    """
+    Complete result returned by InferencePipeline.run().
+
+    Combines accident events and vehicle count data into a single object.
+    Call .to_json() to get the JSON string for DQN consumption.
+    """
+    accidents: List[AccidentEvent]
+    count_result: CountResult
+
+    def to_json(self, indent: int = 2) -> str:
+        return self.count_result.to_json(indent)
+
+    def to_dict(self) -> dict:
+        return self.count_result.to_dict()
 
 
 @dataclass
@@ -68,6 +87,12 @@ class PipelineConfig:
     resize_width: Optional[int] = 1920  # Increased for better detection
     resize_height: Optional[int] = 1080
     target_fps: Optional[float] = None
+
+    # Vehicle counting settings
+    counting_line_position: float = 0.5      # 0.0 = top, 1.0 = bottom
+    counting_min_track_length: int = 3
+    counting_dedup_distance: float = 80.0
+    counting_dedup_time_window: float = 2.0
 
     # Output settings
     draw_bboxes: bool = True
@@ -140,6 +165,14 @@ class PipelineConfig:
                     "min_indicators", config.min_indicators_for_accident
                 )
 
+        # Counting
+        if "counting" in data:
+            c = data["counting"]
+            config.counting_line_position = c.get("line_position", config.counting_line_position)
+            config.counting_min_track_length = c.get("min_track_length", config.counting_min_track_length)
+            config.counting_dedup_distance = c.get("dedup_distance", config.counting_dedup_distance)
+            config.counting_dedup_time_window = c.get("dedup_time_window", config.counting_dedup_time_window)
+
         # Video IO
         if "video_io" in data:
             config.resize_width = data["video_io"].get("resize_width", config.resize_width)
@@ -192,17 +225,25 @@ class InferencePipeline:
         self.tracker: Optional[ByteTrackTracker] = None
         self.speed_estimator: Optional[SpeedEstimator] = None
         self.accident_detector: Optional[AccidentDetector] = None
+        self.vehicle_counter: Optional[VehicleCounter] = None
 
         self._initialized = False
 
         logger.info("InferencePipeline created")
 
-    def initialize(self, fps: float = 30.0) -> None:
+    def initialize(
+        self,
+        fps: float = 30.0,
+        frame_width: int = 1280,
+        frame_height: int = 720,
+    ) -> None:
         """
         Initialize all components.
 
         Args:
             fps: Video FPS for time-based calculations
+            frame_width: Effective frame width in pixels (after any resize)
+            frame_height: Effective frame height in pixels (after any resize)
         """
         logger.info("Initializing pipeline components...")
 
@@ -242,6 +283,16 @@ class InferencePipeline:
             fps=fps,
         )
 
+        # Initialize vehicle counter
+        self.vehicle_counter = VehicleCounter(
+            frame_height=frame_height,
+            line_position=self.config.counting_line_position,
+            min_track_length=self.config.counting_min_track_length,
+            dedup_distance=self.config.counting_dedup_distance,
+            dedup_time_window=self.config.counting_dedup_time_window,
+            fps=fps,
+        )
+
         self._initialized = True
         logger.info("Pipeline components initialized")
 
@@ -267,6 +318,7 @@ class InferencePipeline:
         assert self.tracker is not None
         assert self.speed_estimator is not None
         assert self.accident_detector is not None
+        assert self.vehicle_counter is not None
 
         start_time = time.time()
 
@@ -278,6 +330,9 @@ class InferencePipeline:
 
         # Step 3: Detect accidents
         accident_events = self.accident_detector.detect(tracked_objects, speed_infos, frame_id, timestamp)
+
+        # Step 4: Count vehicles crossing the virtual line
+        self.vehicle_counter.update(tracked_objects, frame_id)
 
         processing_time = time.time() - start_time
 
@@ -359,6 +414,30 @@ class InferencePipeline:
                     2,
                 )
 
+        # Draw counting line and live vehicle counts
+        if self.vehicle_counter is not None:
+            line_y = self.vehicle_counter.line_y_coord
+            frame_w = frame.shape[1]
+            cv2.line(frame, (0, line_y), (frame_w, line_y), (0, 255, 255), 2)
+            cv2.putText(
+                frame, "COUNT LINE", (8, line_y - 6),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1,
+            )
+
+            counts = self.vehicle_counter.get_counts()
+            total = self.vehicle_counter.get_total()
+            y_offset = 24
+            cv2.putText(
+                frame, f"Vehicles: {total}",
+                (8, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 255), 2,
+            )
+            for cls_name, cnt in counts.items():
+                y_offset += 22
+                cv2.putText(
+                    frame, f"  {cls_name}: {cnt}",
+                    (8, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 255, 255), 1,
+                )
+
         return frame
 
     def run(
@@ -367,7 +446,7 @@ class InferencePipeline:
         callback: Optional[Callable[[FrameResult], bool]] = None,
         show_preview: bool = False,
         max_frames: Optional[int] = None,
-    ) -> List[AccidentEvent]:
+    ) -> RunResult:
         """
         Run pipeline on a video source.
 
@@ -378,7 +457,7 @@ class InferencePipeline:
             max_frames: Maximum frames to process (None = all)
 
         Returns:
-            List of all detected accident events
+            RunResult containing accident events and vehicle counts (call .to_json()).
         """
         logger.info(f"Starting pipeline on: {video_source}")
 
@@ -392,13 +471,29 @@ class InferencePipeline:
 
         if not reader.open():
             logger.error(f"Failed to open video source: {video_source}")
-            return []
+            return RunResult(accidents=[], count_result=CountResult(
+                video_source=video_source,
+                processed_at="",
+                total_frames=0,
+                duration_seconds=0.0,
+                fps=0.0,
+                vehicle_counts={},
+                total_vehicles=0,
+                accidents_detected=0,
+                crossing_events=[],
+            ))
 
-        # Initialize with video FPS
-        self.initialize(fps=reader.fps)
+        # Resolve effective frame dimensions (after any resize)
+        raw_w, raw_h = reader.resolution
+        frame_w = self.config.resize_width or raw_w
+        frame_h = self.config.resize_height or raw_h
+
+        # Initialize all components with video FPS and frame dimensions
+        self.initialize(fps=reader.fps, frame_width=frame_w, frame_height=frame_h)
 
         all_accidents = []
         frame_count = 0
+        start_ts = time.time()
 
         try:
             for frame_info in reader.frames():
@@ -430,7 +525,12 @@ class InferencePipeline:
 
                 # Log progress periodically
                 if frame_count % 100 == 0:
-                    logger.info(f"Processed {frame_count} frames, {len(all_accidents)} accidents detected")
+                    counts = self.vehicle_counter.get_counts() if self.vehicle_counter else {}
+                    logger.info(
+                        f"Processed {frame_count} frames | "
+                        f"accidents={len(all_accidents)} | "
+                        f"vehicles={counts}"
+                    )
 
                 # Check max frames
                 if max_frames and frame_count >= max_frames:
@@ -442,8 +542,19 @@ class InferencePipeline:
             if show_preview:
                 cv2.destroyAllWindows()
 
+        duration = time.time() - start_ts
         logger.info(f"Pipeline complete: {frame_count} frames, {len(all_accidents)} accidents")
-        return all_accidents
+
+        # Build final count result
+        assert self.vehicle_counter is not None
+        count_result = self.vehicle_counter.build_result(
+            video_source=video_source,
+            total_frames=frame_count,
+            duration_seconds=duration,
+            accidents_detected=len(all_accidents),
+        )
+
+        return RunResult(accidents=all_accidents, count_result=count_result)
 
     def reset(self) -> None:
         """Reset pipeline state."""
@@ -451,4 +562,6 @@ class InferencePipeline:
             self.tracker.reset()
         if self.accident_detector:
             self.accident_detector.reset()
+        if self.vehicle_counter:
+            self.vehicle_counter.reset()
         logger.info("Pipeline reset")

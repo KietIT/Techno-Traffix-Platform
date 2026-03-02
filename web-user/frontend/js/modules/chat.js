@@ -9,33 +9,33 @@ import { getCurrentLocation } from './maps.js';
 let chatHistory = [];
 
 // Welcome message shown when chat opens
-const WELCOME_MESSAGE = `Xin chào! 👋 Tôi là **NOVA TRAFFIX** - Trợ lý Luật Giao thông.
+const WELCOME_MESSAGE = `Xin chào! 👋 Tôi là **TECHNO TRAFFIX** — Trợ lý Luật Giao thông đường bộ Việt Nam.
 
-🚗 **Tôi có thể giúp bạn:**
+🚗 **TECHNO TRAFFIX có thể giúp bạn:**
 
-📋 **Tra cứu mức phạt** - Hỏi về các vi phạm giao thông
+📋 **Tra cứu mức phạt** — Hỏi về các vi phạm giao thông
    _Ví dụ: "Vượt đèn đỏ bị phạt bao nhiêu?"_
 
-🪪 **Thông tin bằng lái** - GPLX các hạng, điều kiện
+🪪 **Thông tin bằng lái** — GPLX các hạng, điều kiện
    _Ví dụ: "Bằng B2 được lái xe gì?"_
 
-🍺 **Nồng độ cồn** - Quy định và mức phạt
+🍺 **Nồng độ cồn** — Quy định và mức phạt
    _Ví dụ: "Uống rượu lái xe phạt thế nào?"_
 
-⚡ **Tốc độ** - Giới hạn tốc độ các loại đường
+⚡ **Tốc độ** — Giới hạn tốc độ các loại đường
    _Ví dụ: "Tốc độ tối đa trong đô thị?"_
 
-📍 **Biển báo & Quy tắc** - Các quy định giao thông
+📍 **Biển báo & Quy tắc** — Các quy định giao thông
 
-💡 **Mẹo:** Cứ hỏi tự nhiên, tôi sẽ cố gắng trả lời!`;
+💡 _Cứ hỏi tự nhiên, **TECHNO TRAFFIX** sẽ hỗ trợ bạn!_`;
 
 // Help message for "what can you do"
-const HELP_MESSAGE = `🚗 **NOVA TRAFFIX có thể giúp bạn:**
+const HELP_MESSAGE = `🚗 **TECHNO TRAFFIX** có thể giúp bạn những gì?
 
 ━━━━━━━━━━━━━━━━━━━━━━
 
 📋 **1. TRA CỨU MỨC PHẠT**
-Hỏi về bất kỳ vi phạm giao thông nào:
+Hỏi **TECHNO TRAFFIX** về bất kỳ vi phạm giao thông nào:
 • Vượt đèn đỏ, chạy quá tốc độ
 • Không đội mũ bảo hiểm
 • Đi ngược chiều, lấn làn
@@ -73,19 +73,22 @@ Hỏi về bất kỳ vi phạm giao thông nào:
 
 ━━━━━━━━━━━━━━━━━━━━━━
 
-📖 **Nguồn thông tin:**
+📖 **Nguồn thông tin của TECHNO TRAFFIX:**
 • Nghị định 168/2024/NĐ-CP (mới nhất)
 • Luật Trật tự ATGT đường bộ 2024
 
-Hãy hỏi tôi bất cứ điều gì về luật giao thông! 🚦`;
+Hãy hỏi **TECHNO TRAFFIX** bất cứ điều gì về luật giao thông! 🚦`;
 
 export function initChat() {
     const chatFab = document.getElementById('chat-fab');
     const chatPopup = document.getElementById('chat-popup');
     const chatClose = document.getElementById('chat-close');
+    const chatExpand = document.getElementById('chat-expand');
     const chatInput = document.getElementById('chat-input');
     const chatSend = document.getElementById('chat-send');
     const chatMessages = document.getElementById('chat-messages');
+    const chatScrollBtn = document.getElementById('chat-scroll-btn');
+    const chatResizeHandle = document.getElementById('chat-resize-handle');
 
     if (!chatFab || !chatPopup) {
         console.warn('Chat elements not found');
@@ -96,7 +99,7 @@ export function initChat() {
     chatFab.addEventListener('click', () => {
         const wasOpen = chatPopup.classList.contains('chat-popup--open');
         chatPopup.classList.toggle('chat-popup--open');
-        
+
         if (!wasOpen) {
             chatInput.focus();
             // Show welcome message on first open
@@ -109,6 +112,57 @@ export function initChat() {
     chatClose.addEventListener('click', () => {
         chatPopup.classList.remove('chat-popup--open');
     });
+
+    // Expand / collapse toggle
+    if (chatExpand) {
+        chatExpand.addEventListener('click', () => {
+            const isExpanded = chatPopup.classList.toggle('chat-popup--expanded');
+            // Remove any inline resize dimensions when toggling
+            chatPopup.style.width = '';
+            chatPopup.style.height = '';
+            // Update icon: expand ↔ collapse
+            chatExpand.innerHTML = isExpanded
+                ? `<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                       d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" />
+                   </svg>`
+                : `<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                       d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4" />
+                   </svg>`;
+            chatExpand.title = isExpanded ? 'Thu nhỏ' : 'Mở rộng';
+            // Auto-scroll to bottom after resize
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+    }
+
+    // Drag-to-resize from top-left corner
+    if (chatResizeHandle) {
+        initResize(chatPopup, chatResizeHandle, chatMessages);
+    }
+
+    // Scroll-to-bottom button visibility
+    if (chatScrollBtn && chatMessages) {
+        chatMessages.addEventListener('scroll', () => {
+            const distFromBottom = chatMessages.scrollHeight - chatMessages.scrollTop - chatMessages.clientHeight;
+            if (distFromBottom > 100) {
+                chatScrollBtn.style.display = '';
+                chatScrollBtn.classList.add('chat-scroll-btn--visible');
+            } else {
+                chatScrollBtn.classList.remove('chat-scroll-btn--visible');
+                // Hide after fade-out transition
+                setTimeout(() => {
+                    if (!chatScrollBtn.classList.contains('chat-scroll-btn--visible')) {
+                        chatScrollBtn.style.display = 'none';
+                    }
+                }, 200);
+            }
+        });
+
+        chatScrollBtn.addEventListener('click', () => {
+            chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
+        });
+    }
 
     // Send message
     const sendMessage = async () => {
@@ -139,17 +193,17 @@ export function initChat() {
             // Call backend API
             const response = await callChatAPI(message);
             removeTypingIndicator(typingId);
-            
+
             // Format and display response
             const formattedResponse = formatResponse(response);
             addMessage(formattedResponse, 'ai', response.sources);
-            
+
             // Update chat history
             chatHistory.push(
                 { role: 'user', content: message },
                 { role: 'assistant', content: response.content }
             );
-            
+
             // Keep only last 10 messages for context
             if (chatHistory.length > 10) {
                 chatHistory = chatHistory.slice(-10);
@@ -158,7 +212,7 @@ export function initChat() {
         } catch (error) {
             console.error('Chat error:', error);
             removeTypingIndicator(typingId);
-            addMessage('Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.', 'ai');
+            addMessage('**TECHNO TRAFFIX** xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.', 'ai');
         }
 
         chatInput.disabled = false;
@@ -174,10 +228,107 @@ export function initChat() {
         }
     });
 
+    // Escape key to close chat
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && chatPopup.classList.contains('chat-popup--open')) {
+            chatPopup.classList.remove('chat-popup--open');
+        }
+    });
+
     // Add quick action buttons
     addQuickActions(chatMessages);
 
+    // Wire up overview page buttons that open the chatbot
+    const openChatFromOverview = () => {
+        if (!chatPopup.classList.contains('chat-popup--open')) {
+            chatPopup.classList.add('chat-popup--open');
+            chatInput.focus();
+            if (chatMessages.children.length === 0) {
+                addMessage(WELCOME_MESSAGE, 'ai');
+            }
+        }
+    };
+
+    const overviewChatBtn = document.getElementById('overview-open-chat');
+    if (overviewChatBtn) {
+        overviewChatBtn.addEventListener('click', openChatFromOverview);
+    }
+
+    const featureChatCard = document.getElementById('feature-chatbot');
+    if (featureChatCard) {
+        featureChatCard.addEventListener('click', openChatFromOverview);
+    }
+
     console.log('💬 Chat module initialized with backend API');
+}
+
+/**
+ * Initialize drag-to-resize from the top-left corner
+ */
+function initResize(chatPopup, handle, chatMessages) {
+    let isResizing = false;
+    let startX, startY, startWidth, startHeight;
+
+    handle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        isResizing = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        startWidth = chatPopup.offsetWidth;
+        startHeight = chatPopup.offsetHeight;
+        chatPopup.classList.add('chat-popup--resizing');
+        document.body.style.cursor = 'nw-resize';
+        document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+        // Dragging top-left: moving left increases width, moving up increases height
+        const deltaX = startX - e.clientX;
+        const deltaY = startY - e.clientY;
+        const newWidth = Math.max(340, Math.min(800, startWidth + deltaX));
+        const newHeight = Math.max(400, Math.min(window.innerHeight * 0.9, startHeight + deltaY));
+        chatPopup.style.width = newWidth + 'px';
+        chatPopup.style.height = newHeight + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (!isResizing) return;
+        isResizing = false;
+        chatPopup.classList.remove('chat-popup--resizing');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+
+    // Touch support for tablets
+    handle.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        isResizing = true;
+        startX = touch.clientX;
+        startY = touch.clientY;
+        startWidth = chatPopup.offsetWidth;
+        startHeight = chatPopup.offsetHeight;
+        chatPopup.classList.add('chat-popup--resizing');
+    }, { passive: true });
+
+    document.addEventListener('touchmove', (e) => {
+        if (!isResizing) return;
+        const touch = e.touches[0];
+        const deltaX = startX - touch.clientX;
+        const deltaY = startY - touch.clientY;
+        const newWidth = Math.max(340, Math.min(800, startWidth + deltaX));
+        const newHeight = Math.max(400, Math.min(window.innerHeight * 0.9, startHeight + deltaY));
+        chatPopup.style.width = newWidth + 'px';
+        chatPopup.style.height = newHeight + 'px';
+    }, { passive: true });
+
+    document.addEventListener('touchend', () => {
+        if (!isResizing) return;
+        isResizing = false;
+        chatPopup.classList.remove('chat-popup--resizing');
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
 }
 
 /**
@@ -185,7 +336,7 @@ export function initChat() {
  */
 function checkHelpQuestion(message) {
     const lowerMessage = message.toLowerCase();
-    
+
     const helpPatterns = [
         'bạn có thể làm gì',
         'bạn làm được gì',
@@ -203,13 +354,13 @@ function checkHelpQuestion(message) {
         'hỏi gì được',
         'hỏi được gì',
     ];
-    
+
     for (const pattern of helpPatterns) {
         if (lowerMessage.includes(pattern)) {
             return HELP_MESSAGE;
         }
     }
-    
+
     return null;
 }
 
@@ -241,7 +392,7 @@ async function callChatAPI(message) {
     }
 
     const data = await response.json();
-    
+
     if (!data.success) {
         throw new Error(data.error || 'Unknown error');
     }
@@ -254,12 +405,12 @@ async function callChatAPI(message) {
  */
 function formatResponse(response) {
     let content = response.content;
-    
+
     // If topic was rejected, the content already has the rejection message
     if (!response.topic_valid) {
         return content;
     }
-    
+
     return content;
 }
 
@@ -271,18 +422,7 @@ function addMessage(text, sender, sources = null) {
     const messageDiv = document.createElement('div');
 
     messageDiv.className = `chat-message chat-message--${sender}`;
-    messageDiv.style.cssText = `
-        padding: 0.75rem 1rem;
-        border-radius: 0.75rem;
-        margin-bottom: 0.75rem;
-        max-width: 90%;
-        line-height: 1.5;
-        font-size: 0.9rem;
-        ${sender === 'user'
-            ? 'background: linear-gradient(135deg, #3b82f6, #2563eb); margin-left: auto; color: white;'
-            : 'background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); color: #0f172a;'}
-    `;
-    
+
     // Parse markdown-like formatting
     const formattedText = formatMarkdown(text);
     messageDiv.innerHTML = formattedText;
@@ -304,8 +444,8 @@ function formatMarkdown(text) {
     return text
         // Bold: **text**
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        // Italic: _text_
-        .replace(/_(.*?)_/g, '<em style="color: #64748b; font-size: 0.85em;">$1</em>')
+        // Italic: _text_ (styled via CSS .chat-message em)
+        .replace(/_(.*?)_/g, '<em>$1</em>')
         // Line breaks
         .replace(/\n/g, '<br>')
         // Bullet points
@@ -319,14 +459,8 @@ function formatMarkdown(text) {
  */
 function createSourcesSection(sources) {
     const div = document.createElement('div');
-    div.style.cssText = `
-        margin-top: 0.75rem;
-        padding-top: 0.75rem;
-        border-top: 1px solid rgba(59, 130, 246, 0.2);
-        font-size: 0.8rem;
-        color: #64748b;
-    `;
-    
+    div.className = 'chat-sources';
+
     const topSources = sources.slice(0, 2);
     if (topSources.length > 0) {
         div.innerHTML = `
@@ -334,7 +468,7 @@ function createSourcesSection(sources) {
             ${topSources.map(s => `<div style="margin-left: 1rem;">• ${s.source}</div>`).join('')}
         `;
     }
-    
+
     return div;
 }
 
@@ -345,44 +479,23 @@ function showTypingIndicator() {
     const chatMessages = document.getElementById('chat-messages');
     const typingDiv = document.createElement('div');
     const typingId = 'typing-' + Date.now();
-    
+
     typingDiv.id = typingId;
     typingDiv.className = 'chat-typing';
-    typingDiv.style.cssText = `
-        padding: 0.75rem 1rem;
-        border-radius: 0.75rem;
-        margin-bottom: 0.75rem;
-        max-width: 60%;
-        background: rgba(59, 130, 246, 0.1);
-        border: 1px solid rgba(59, 130, 246, 0.2);
-    `;
     typingDiv.innerHTML = `
-        <div style="display: flex; gap: 4px; align-items: center;">
-            <span style="color: #64748b;">Đang trả lời</span>
-            <span class="typing-dots" style="display: flex; gap: 2px;">
-                <span style="width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; animation: typing 1s infinite;"></span>
-                <span style="width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; animation: typing 1s infinite 0.2s;"></span>
-                <span style="width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; animation: typing 1s infinite 0.4s;"></span>
+        <div style="display: flex; gap: 6px; align-items: center;">
+            <span class="chat-typing__label">Đang trả lời</span>
+            <span style="display: flex; gap: 3px;">
+                <span class="chat-typing__dot"></span>
+                <span class="chat-typing__dot"></span>
+                <span class="chat-typing__dot"></span>
             </span>
         </div>
     `;
-    
-    // Add animation style if not exists
-    if (!document.getElementById('typing-animation-style')) {
-        const style = document.createElement('style');
-        style.id = 'typing-animation-style';
-        style.textContent = `
-            @keyframes typing {
-                0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
-                30% { opacity: 1; transform: translateY(-3px); }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
+
     chatMessages.appendChild(typingDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
-    
+
     return typingId;
 }
 
@@ -409,46 +522,19 @@ function addQuickActions(chatMessages) {
 
     const actionsDiv = document.createElement('div');
     actionsDiv.id = 'quick-actions';
-    actionsDiv.style.cssText = `
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        padding: 0.5rem;
-        margin-bottom: 0.5rem;
-    `;
 
     quickActions.forEach(action => {
         const btn = document.createElement('button');
-        btn.style.cssText = `
-            padding: 0.4rem 0.75rem;
-            border-radius: 1rem;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            background: rgba(59, 130, 246, 0.1);
-            color: #0f172a;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        `;
         btn.innerHTML = `${action.icon} ${action.text}`;
         btn.addEventListener('click', () => {
             const chatInput = document.getElementById('chat-input');
             chatInput.value = action.query;
             document.getElementById('chat-send').click();
         });
-        btn.addEventListener('mouseenter', () => {
-            btn.style.background = 'rgba(59, 130, 246, 0.2)';
-            btn.style.borderColor = 'rgba(59, 130, 246, 0.5)';
-        });
-        btn.addEventListener('mouseleave', () => {
-            btn.style.background = 'rgba(59, 130, 246, 0.1)';
-            btn.style.borderColor = 'rgba(59, 130, 246, 0.3)';
-        });
         actionsDiv.appendChild(btn);
     });
 
-    // Insert at the beginning of chat messages area
-    chatMessages.parentNode.insertBefore(actionsDiv, chatMessages);
+    // Insert before the chat-messages-wrapper (which contains chat-messages)
+    const wrapper = chatMessages.closest('.chat-messages-wrapper') || chatMessages.parentNode;
+    wrapper.parentNode.insertBefore(actionsDiv, wrapper);
 }

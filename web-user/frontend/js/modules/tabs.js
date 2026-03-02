@@ -21,6 +21,8 @@
  *    2. Tab khác: Ẩn Hero section, Tab content hiển thị full page
  */
 
+import { pauseParticles, resumeParticles } from './particles.js';
+
 export function initTabs() {
     const nav = document.getElementById('main-nav');
     const tabs = document.querySelectorAll('.nav-tab');
@@ -151,12 +153,16 @@ export function initTabs() {
 
         // === NAVIGATION ===
         // Remove active state from all nav tabs
-        tabs.forEach(t => t.classList.remove('nav-tab--active'));
+        tabs.forEach(t => {
+            t.classList.remove('nav-tab--active');
+            t.setAttribute('aria-selected', 'false');
+        });
 
         // Add active state to clicked tab
         const activeTab = getTabElement(tabName);
         if (activeTab) {
             activeTab.classList.add('nav-tab--active');
+            activeTab.setAttribute('aria-selected', 'true');
         }
 
         // === CONTENT PANELS ===
@@ -167,6 +173,14 @@ export function initTabs() {
         // Close mobile menu after selection
         if (nav) {
             nav.classList.remove('header__nav--open');
+            if (mobileToggle) mobileToggle.setAttribute('aria-expanded', 'false');
+        }
+
+        // Pause/resume particle system based on active tab (P2.8)
+        if (tabName === 'overview') {
+            resumeParticles();
+        } else {
+            pauseParticles();
         }
 
         // Initialize maps if switching to map tabs
@@ -216,13 +230,15 @@ export function initTabs() {
     // Mobile menu toggle
     if (mobileToggle && nav) {
         mobileToggle.addEventListener('click', () => {
-            nav.classList.toggle('header__nav--open');
+            const isOpen = nav.classList.toggle('header__nav--open');
+            mobileToggle.setAttribute('aria-expanded', String(isOpen));
         });
 
         // Close menu when clicking outside
         document.addEventListener('click', (e) => {
             if (!nav.contains(e.target) && !mobileToggle.contains(e.target)) {
                 nav.classList.remove('header__nav--open');
+                mobileToggle.setAttribute('aria-expanded', 'false');
             }
         });
     }

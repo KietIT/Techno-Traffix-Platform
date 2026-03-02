@@ -3,6 +3,10 @@
  * Lightweight canvas-based physics simulation (full viewport, all tabs)
  */
 
+// Module-level animation state so pauseParticles/resumeParticles can access it
+let animationId = null;
+let loopFn = null;
+
 export function initParticles() {
     const canvas = document.getElementById('hero-particles');
     if (!canvas) return;
@@ -11,6 +15,7 @@ export function initParticles() {
 
     // Config
     const REPULSION_RADIUS = 120;
+    const REPULSION_RADIUS_SQ = REPULSION_RADIUS * REPULSION_RADIUS;
     const REPULSION_STRENGTH = 800;
     const FRICTION = 0.98;
     const BASE_SPEED = 0.4;
@@ -19,7 +24,6 @@ export function initParticles() {
 
     let particles = [];
     let mouse = { x: -9999, y: -9999 };
-    let animationId = null;
 
     function getParticleCount() {
         return window.innerWidth < 768 ? 25 : 50;
@@ -52,10 +56,11 @@ export function initParticles() {
             // Mouse repulsion
             const dx = p.x - mouse.x;
             const dy = p.y - mouse.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+            const distSq = dx * dx + dy * dy;
 
-            if (dist < REPULSION_RADIUS && dist > 0) {
-                const force = REPULSION_STRENGTH / (dist * dist);
+            if (distSq < REPULSION_RADIUS_SQ && distSq > 0) {
+                const dist = Math.sqrt(distSq);
+                const force = REPULSION_STRENGTH / (distSq + 1);
                 p.vx += (dx / dist) * force;
                 p.vy += (dy / dist) * force;
             }
@@ -93,6 +98,14 @@ export function initParticles() {
         }
     }
 
+    function getParticleColor(opacity) {
+        const theme = document.documentElement.getAttribute('data-theme');
+        if (theme === 'light') {
+            return `rgba(8, 145, 178, ${opacity * 0.6})`;
+        }
+        return `rgba(59, 130, 246, ${opacity})`;
+    }
+
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -100,7 +113,7 @@ export function initParticles() {
             const p = particles[i];
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(59, 130, 246, ${p.opacity})`;
+            ctx.fillStyle = getParticleColor(p.opacity);
             ctx.fill();
         }
     }
@@ -147,17 +160,37 @@ export function initParticles() {
         }
     });
 
-    // Resize handling
+    // Resize handling (debounced to avoid thrashing on rapid resize events)
+    let resizeTimer;
     window.addEventListener('resize', () => {
-        resize();
-        const targetCount = getParticleCount();
-        if (particles.length !== targetCount) {
-            createParticles();
-        }
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            resize();
+            const targetCount = getParticleCount();
+            if (particles.length !== targetCount) {
+                createParticles();
+            }
+        }, 150);
     });
 
     // Init
     resize();
     createParticles();
+    loopFn = loop;
     loop();
+}
+
+/** Pause the particle animation loop (e.g. when switching away from overview tab). */
+export function pauseParticles() {
+    if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+    }
+}
+
+/** Resume the particle animation loop. */
+export function resumeParticles() {
+    if (!animationId && loopFn) {
+        loopFn();
+    }
 }

@@ -97,20 +97,30 @@ def analyze_video():
         print(f"Saving video to: {input_path}")
         video_file.save(str(input_path))
 
-        # Process video
+        # Process video (tracking + vehicle counting + annotation)
         result = ai_service.process_video(input_path, output_path)
 
         # Cleanup input
         cleanup_file(input_path)
 
-        # Build response URL - use relative path for same-origin requests
+        # Save CountResult as JSON file
+        count_result = result.get("count_result")
+        json_url = None
+        if count_result is not None:
+            json_filename = generate_unique_filename("result", ".json")
+            json_path = PROCESSED_DIR / json_filename
+            json_path.write_text(count_result.to_json(), encoding="utf-8")
+            json_url = f"/api/static/processed/{json_filename}"
+            print(f"JSON result saved: {json_path}")
+
+        # Build response URLs
         actual_filename = result.get("output_filename", output_filename)
         media_url = f"/api/static/processed/{actual_filename}"
 
-        print(f"Sending response - media_url: {media_url}")
-        print(
-            f"Traffic: {result['traffic_status']}, Jam: {result.get('is_traffic_jam')}, Accident: {result['accident_detected']}"
-        )
+        print(f"media_url: {media_url}")
+        print(f"Traffic: {result['traffic_status']}, Jam: {result.get('is_traffic_jam')}, "
+              f"Accident: {result['accident_detected']}, "
+              f"Vehicles: {result.get('vehicle_counts', {})}")
 
         return jsonify(
             {
@@ -118,8 +128,11 @@ def analyze_video():
                 "traffic_status": result["traffic_status"],
                 "is_traffic_jam": result.get("is_traffic_jam", False),
                 "accident_warning": result["accident_detected"],
+                "vehicle_counts": result.get("vehicle_counts", {}),
+                "total_vehicles": result.get("total_vehicles", 0),
+                "json_url": json_url,
                 "media_url": media_url,
-                "video_url": media_url,  # Backward compatibility
+                "video_url": media_url,
                 "media_type": "video",
             }
         )
@@ -213,6 +226,7 @@ def serve_processed_media(filename):
         ".jpeg": "image/jpeg",
         ".png": "image/png",
         ".gif": "image/gif",
+        ".json": "application/json",
     }
 
     content_type = content_types.get(ext, "application/octet-stream")

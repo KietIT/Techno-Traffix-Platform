@@ -8,6 +8,7 @@ Usage:
 """
 
 import argparse
+import json
 import logging
 import sys
 from pathlib import Path
@@ -87,6 +88,15 @@ def main():
         help="Maximum frames to process"
     )
     
+    # JSON output
+    parser.add_argument(
+        "--output-json",
+        type=str,
+        default=None,
+        metavar="PATH",
+        help="Save counting result as JSON to this file path (e.g. result.json)"
+    )
+
     # Logging
     parser.add_argument(
         "--log-level",
@@ -127,24 +137,45 @@ def main():
     logger.info(f"Processing video: {args.video}")
     
     try:
-        accidents = pipeline.run(
+        run_result = pipeline.run(
             video_source=args.video,
             show_preview=args.show,
             max_frames=args.max_frames
         )
-        
-        # Report results
+
+        cr = run_result.count_result
+
+        # --- Accident summary ---
         logger.info("=" * 50)
         logger.info("DETECTION SUMMARY")
         logger.info("=" * 50)
-        
-        if accidents:
-            logger.info(f"Total accidents detected: {len(accidents)}")
-            for event in accidents:
+
+        if run_result.accidents:
+            logger.info(f"Total accidents detected: {len(run_result.accidents)}")
+            for event in run_result.accidents:
                 logger.info(f"  - {event}")
         else:
             logger.info("No accidents detected")
-            
+
+        # --- Vehicle count summary ---
+        logger.info("=" * 50)
+        logger.info("VEHICLE COUNT SUMMARY")
+        logger.info("=" * 50)
+        for cls_name, count in cr.vehicle_counts.items():
+            logger.info(f"  {cls_name:<12}: {count}")
+        logger.info(f"  {'TOTAL':<12}: {cr.total_vehicles}")
+        logger.info(f"  Processed {cr.total_frames} frames ({cr.duration_seconds}s @ {cr.fps}fps)")
+
+        # --- JSON output ---
+        json_str = run_result.to_json()
+        print("\n--- RESULT JSON ---")
+        print(json_str)
+
+        if args.output_json:
+            output_path = Path(args.output_json)
+            output_path.write_text(json_str, encoding="utf-8")
+            logger.info(f"Result saved to: {output_path.resolve()}")
+
     except KeyboardInterrupt:
         logger.info("Processing interrupted by user")
     except Exception as e:

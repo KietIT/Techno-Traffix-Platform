@@ -147,6 +147,14 @@ accident_detection:
     min_vehicle_size_ratio: 0.1  # Smaller/larger vehicle size ratio
     max_vehicle_size_ratio: 10.0
 
+# Vehicle Counting Configuration
+counting:
+  enabled: true
+  line_position: 0.5      # 0.0 = top of frame, 1.0 = bottom (default: middle)
+  min_track_length: 3     # Ignore tracks shorter than this (suppresses noise)
+  dedup_distance: 80.0    # Pixel radius for spatial re-ID deduplication
+  dedup_time_window: 2.0  # Seconds — sliding window for spatial dedup
+
 # Video IO Configuration
 video_io:
   default_fps: 30

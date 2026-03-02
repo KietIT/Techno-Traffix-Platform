@@ -1,0 +1,58 @@
+{
+  "processed_at": "2026-02-26T22:06:37.199149",
+  "directions": {
+    "east": {
+      "direction": "east",
+      "image_source": "imgs/e.jpg",
+      "processed_at": "2026-02-26T22:06:31.353747",
+      "total_vehicles": 16,
+      "vehicle_counts": {
+        "car": 9,
+        "motorcycle": 7
+      },
+      "has_ambulance": false,
+      "has_accident": false,
+      "accident_confidence": 1.0
+    },
+    "west": {
+      "direction": "west",
+      "image_source": "imgs/w.jpg",
+      "processed_at": "2026-02-26T22:06:32.908838",
+      "total_vehicles": 21,
+      "vehicle_counts": {
+        "truck": 15,
+        "car": 6
+      },
+      "has_ambulance": false,
+      "has_accident": false,
+      "accident_confidence": 1.0
+    },
+    "south": {
+      "direction": "south",
+      "image_source": "imgs/s.jpg",
+      "processed_at": "2026-02-26T22:06:34.515302",
+      "total_vehicles": 19,
+      "vehicle_counts": {
+        "truck": 15,
+        "car": 3,
+        "motorcycle": 1
+      },
+      "has_ambulance": false,
+      "has_accident": false,
+      "accident_confidence": 0.9998
+    },
+    "north": {
+      "direction": "north",
+      "image_source": "imgs/n.jpg",
+      "processed_at": "2026-02-26T22:06:37.199149",
+      "total_vehicles": 3,
+      "vehicle_counts": {
+        "truck": 2,
+        "car": 1
+      },
+      "has_ambulance": false,
+      "has_accident": true,
+      "accident_confidence": 1.0
+    }
+  }
+}

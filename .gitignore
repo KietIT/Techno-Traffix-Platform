@@ -104,6 +104,7 @@ web-user/backend/runs/
 # Data Files (User Generated)
 # ===========================================
 web-user/backend/app/data/posts.json
+project_context.md
 
 # ===========================================
 # Node.js (if applicable)
