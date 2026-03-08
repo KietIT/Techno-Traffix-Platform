@@ -2,11 +2,11 @@
 from flask import Blueprint, request, jsonify, send_from_directory, Response
 from pathlib import Path
 import os
-import asyncio
 import logging
 
 from app.core.config import PROCESSED_DIR, STATIC_DIR, HOST, PORT
 from app.services.ai_service import ai_service
+from app.services.task_manager import task_manager
 from app.services.traffic_service import traffic_service
 from app.services.chat_service import chat_service
 from app.services.air_quality_service import air_quality_service
@@ -26,9 +26,7 @@ def health_check():
 
 @api.route("/analyze/image", methods=["POST"])
 def analyze_image():
-    """
-    API endpoint to analyze uploaded image for traffic and accidents.
-    """
+    """Submit image analysis as a background task. Returns task_id for polling."""
     try:
         if "image" not in request.files:
             return jsonify({"success": False, "error": "No image file provided"}), 400
@@ -49,17 +47,11 @@ def analyze_image():
         print(f"Saving image to: {input_path}")
         image_file.save(str(input_path))
 
-        # Process image
-        result = ai_service.process_image(input_path, output_path)
-
-        # Cleanup input
-        cleanup_file(input_path)
-
-        # Build response URL - use relative path for same-origin requests
-        media_url = f"/api/static/processed/{output_filename}"
-
-        return jsonify(
-            {
+        def run_analysis(progress_callback):
+            result = ai_service.process_image(input_path, output_path, progress_callback=progress_callback)
+            cleanup_file(input_path)
+            media_url = f"/api/static/processed/{output_filename}"
+            return {
                 "success": True,
                 "traffic_status": result["traffic_status"],
                 "is_traffic_jam": result.get("is_traffic_jam", False),
@@ -67,7 +59,9 @@ def analyze_image():
                 "media_url": media_url,
                 "media_type": "image",
             }
-        )
+
+        task_id = task_manager.submit(run_analysis, media_type="image")
+        return jsonify({"success": True, "task_id": task_id})
 
     except Exception as e:
         print(f"Error processing image: {e}")
@@ -76,9 +70,7 @@ def analyze_image():
 
 @api.route("/analyze/video", methods=["POST"])
 def analyze_video():
-    """
-    API endpoint to analyze uploaded video for traffic and accidents.
-    """
+    """Submit video analysis as a background task. Returns task_id for polling."""
     try:
         if "video" not in request.files:
             return jsonify({"success": False, "error": "No video file provided"}), 400
@@ -97,33 +89,29 @@ def analyze_video():
         print(f"Saving video to: {input_path}")
         video_file.save(str(input_path))
 
-        # Process video (tracking + vehicle counting + annotation)
-        result = ai_service.process_video(input_path, output_path)
+        def run_analysis(progress_callback):
+            result = ai_service.process_video(input_path, output_path, progress_callback=progress_callback)
+            cleanup_file(input_path)
 
-        # Cleanup input
-        cleanup_file(input_path)
+            # Save CountResult as JSON file
+            count_result = result.get("count_result")
+            json_url = None
+            if count_result is not None:
+                json_filename = generate_unique_filename("result", ".json")
+                json_path = PROCESSED_DIR / json_filename
+                json_path.write_text(count_result.to_json(), encoding="utf-8")
+                json_url = f"/api/static/processed/{json_filename}"
+                print(f"JSON result saved: {json_path}")
 
-        # Save CountResult as JSON file
-        count_result = result.get("count_result")
-        json_url = None
-        if count_result is not None:
-            json_filename = generate_unique_filename("result", ".json")
-            json_path = PROCESSED_DIR / json_filename
-            json_path.write_text(count_result.to_json(), encoding="utf-8")
-            json_url = f"/api/static/processed/{json_filename}"
-            print(f"JSON result saved: {json_path}")
+            actual_filename = result.get("output_filename", output_filename)
+            media_url = f"/api/static/processed/{actual_filename}"
 
-        # Build response URLs
-        actual_filename = result.get("output_filename", output_filename)
-        media_url = f"/api/static/processed/{actual_filename}"
+            print(f"media_url: {media_url}")
+            print(f"Traffic: {result['traffic_status']}, Jam: {result.get('is_traffic_jam')}, "
+                  f"Accident: {result['accident_detected']}, "
+                  f"Vehicles: {result.get('vehicle_counts', {})}")
 
-        print(f"media_url: {media_url}")
-        print(f"Traffic: {result['traffic_status']}, Jam: {result.get('is_traffic_jam')}, "
-              f"Accident: {result['accident_detected']}, "
-              f"Vehicles: {result.get('vehicle_counts', {})}")
-
-        return jsonify(
-            {
+            return {
                 "success": True,
                 "traffic_status": result["traffic_status"],
                 "is_traffic_jam": result.get("is_traffic_jam", False),
@@ -135,11 +123,34 @@ def analyze_video():
                 "video_url": media_url,
                 "media_type": "video",
             }
-        )
+
+        task_id = task_manager.submit(run_analysis, media_type="video")
+        return jsonify({"success": True, "task_id": task_id})
 
     except Exception as e:
         print(f"Error processing video: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
+
+
+@api.route("/analyze/status/<task_id>", methods=["GET"])
+def analyze_status(task_id):
+    """Poll background task progress / result."""
+    task = task_manager.get_task(task_id)
+    if task is None:
+        return jsonify({"success": False, "error": "Task not found"}), 404
+
+    response = {
+        "status": task.status,
+        "progress": task.progress,
+        "progress_message": task.progress_message,
+    }
+
+    if task.status == "completed" and task.result is not None:
+        response["result"] = task.result
+    elif task.status == "failed":
+        response["error"] = task.error or "Unknown error"
+
+    return jsonify(response)
 
 
 @api.route("/traffic/data", methods=["GET"])

@@ -50,10 +50,14 @@ export function initMaps(apiBase) {
         initAirMap(airMapContainer);
     }
 
-    // Invalidate map size when tabs become visible (fixes mobile rendering)
+    // Invalidate map size when tabs become visible (debounced 150ms)
+    let _mapsResizeTimer = null;
     window.addEventListener('resize', () => {
-        if (trafficMap) setTimeout(() => trafficMap.invalidateSize(), 100);
-        if (airMap) setTimeout(() => airMap.invalidateSize(), 100);
+        clearTimeout(_mapsResizeTimer);
+        _mapsResizeTimer = setTimeout(() => {
+            if (trafficMap) trafficMap.invalidateSize();
+            if (airMap) airMap.invalidateSize();
+        }, 150);
     });
 
     // Also listen for tab switch via MutationObserver on the tab panels
@@ -424,8 +428,8 @@ function haversineDistance(lat1, lng1, lat2, lng2) {
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLng = (lng2 - lng1) * Math.PI / 180;
     const a = Math.sin(dLat / 2) ** 2 +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLng / 2) ** 2;
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLng / 2) ** 2;
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 

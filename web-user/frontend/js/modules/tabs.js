@@ -257,17 +257,21 @@ export function initTabs() {
 
     window.addEventListener('hashchange', handleHashChange);
 
-    // Update indicator và container height on window resize
+    // Update indicator và container height on window resize (debounced 150ms)
+    let _tabsResizeTimer = null;
     window.addEventListener('resize', () => {
-        const activeTab = getTabElement(activeTabName);
-        if (activeTab) {
-            moveIndicatorTo(activeTab, false);
-        }
+        clearTimeout(_tabsResizeTimer);
+        _tabsResizeTimer = setTimeout(() => {
+            const activeTab = getTabElement(activeTabName);
+            if (activeTab) {
+                moveIndicatorTo(activeTab, false);
+            }
 
-        // Cập nhật chiều cao container
-        if (currentPanel) {
-            updateContainerHeight(currentPanel);
-        }
+            // Cập nhật chiều cao container
+            if (currentPanel) {
+                updateContainerHeight(currentPanel);
+            }
+        }, 150);
     });
 
     // ==================== INITIALIZATION ====================

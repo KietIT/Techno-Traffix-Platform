@@ -9,8 +9,9 @@ from dotenv import load_dotenv
 env_path = Path(__file__).parent / ".env"
 load_dotenv(env_path)
 
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, jsonify
 from flask_cors import CORS
+from werkzeug.exceptions import RequestEntityTooLarge
 
 from app.api.routes import api
 from app.api.community_routes import community_api
@@ -24,6 +25,9 @@ def create_app():
     """Application factory."""
     app = Flask(__name__, static_folder=None)
 
+    # Limit upload size: 200 MB (prevents OOM from huge files)
+    app.config["MAX_CONTENT_LENGTH"] = 200 * 1024 * 1024
+
     # Enable CORS for all routes
     CORS(
         app,
@@ -36,6 +40,10 @@ def create_app():
     # Register API blueprints
     app.register_blueprint(api, url_prefix="/api")
     app.register_blueprint(community_api, url_prefix="/api")
+
+    @app.errorhandler(RequestEntityTooLarge)
+    def handle_file_too_large(e):
+        return jsonify({"success": False, "error": "File quá lớn. Kích thước tối đa: 200MB"}), 413
 
     # Serve uploaded files
     @app.route("/api/static/uploads/<path:filename>")
@@ -98,4 +106,7 @@ if __name__ == "__main__":
     print("  Press Ctrl+C to stop the server")
     print("=" * 60 + "\n")
 
-    app.run(debug=DEBUG, host=HOST, port=PORT)
+    # use_reloader=False: The reloader watches files and restarts the process
+    # on changes. Output files saved to backend/static/processed/ trigger
+    # restarts mid-inference, killing background threads and crashing the app.
+    app.run(debug=DEBUG, host=HOST, port=PORT, threaded=True, use_reloader=False)

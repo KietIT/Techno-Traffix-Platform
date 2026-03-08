@@ -4,6 +4,8 @@
 
 let API_BASE = '';
 let selectedFile = null;
+let _pollTimer = null;
+let _abortController = null;
 
 /** Recalculate .tab-panels-container minHeight after content changes. */
 function recalcContainerHeight() {
@@ -134,6 +136,19 @@ function handleFileSelect(file) {
     console.log(`File selected: ${file.name} (${file.type})`);
 }
 
+function stopPolling() {
+    if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+    if (_abortController) { _abortController.abort(); _abortController = null; }
+}
+
+function setProgress(pct, label) {
+    const progressContainer = document.getElementById('upload-progress');
+    if (!progressContainer) return;
+    progressContainer.classList.remove('hidden');
+    progressContainer.querySelector('.upload-progress__bar').style.width = pct + '%';
+    progressContainer.querySelector('.upload-progress__label').textContent = label;
+}
+
 export async function handleAnalysis() {
     clearUploadError();
     if (!selectedFile) {
@@ -151,92 +166,141 @@ export async function handleAnalysis() {
     document.getElementById('results-section').classList.add('hidden');
     document.getElementById('analyze-btn').disabled = true;
 
-    const progressContainer = document.getElementById('upload-progress');
+    const cancelBtn = document.getElementById('cancel-analysis-btn');
+    if (cancelBtn) {
+        cancelBtn.classList.remove('hidden');
+        cancelBtn.onclick = () => {
+            stopPolling();
+            finishAnalysis(false);
+        };
+    }
 
+    _abortController = new AbortController();
     let analysisSucceeded = false;
 
+    const TIMEOUT_MS = isVideo ? 10 * 60 * 1000 : 2 * 60 * 1000;
+
     try {
-        console.log(`Sending ${isVideo ? 'video' : 'image'} to ${API_BASE}${endpoint}`);
+        // ---- Phase 1: Upload file & get task_id ----
+        setProgress(0, 'Đang tải lên...');
 
-        let data;
+        const uploadRes = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
 
-        if (isVideo) {
-            data = await new Promise((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
+            _abortController.signal.addEventListener('abort', () => {
+                xhr.abort();
+                reject(new Error('Đã hủy'));
+            });
 
-                if (progressContainer) {
-                    progressContainer.classList.remove('hidden');
-                    progressContainer.querySelector('.upload-progress__label').textContent = 'Đang tải lên...';
-                    progressContainer.querySelector('.upload-progress__bar').style.width = '0%';
+            xhr.upload.onprogress = (e) => {
+                if (e.lengthComputable) {
+                    // Upload maps to 0-30% of overall progress
+                    const uploadPct = Math.round((e.loaded / e.total) * 30);
+                    setProgress(uploadPct, uploadPct < 30 ? `Đang tải lên... ${Math.round(e.loaded / e.total * 100)}%` : 'Đã tải lên, đang gửi xử lý...');
+                }
+            };
+
+            xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try { resolve(JSON.parse(xhr.responseText)); }
+                    catch { reject(new Error('Invalid server response')); }
+                } else {
+                    reject(new Error(`Server error (${xhr.status})`));
+                }
+            };
+            xhr.onerror = () => reject(new Error('Network error'));
+            xhr.open('POST', `${API_BASE}${endpoint}`);
+            xhr.send(formData);
+        });
+
+        if (!uploadRes.success || !uploadRes.task_id) {
+            throw new Error(uploadRes.error || 'Upload failed');
+        }
+
+        const taskId = uploadRes.task_id;
+        console.log(`Task submitted: ${taskId}`);
+        setProgress(30, 'Đang phân tích AI...');
+
+        // ---- Phase 2: Poll for status ----
+        const pollInterval = isVideo ? 2000 : 1000;
+        const startTime = Date.now();
+
+        const data = await new Promise((resolve, reject) => {
+            let polling = false;  // guard against overlapping async callbacks
+            _pollTimer = setInterval(async () => {
+                if (polling) return;  // previous fetch still in-flight
+
+                if (_abortController && _abortController.signal.aborted) {
+                    stopPolling();
+                    reject(new Error('Đã hủy'));
+                    return;
                 }
 
-                xhr.upload.onprogress = (e) => {
-                    if (e.lengthComputable && progressContainer) {
-                        const pct = Math.round((e.loaded / e.total) * 100);
-                        progressContainer.querySelector('.upload-progress__bar').style.width = pct + '%';
-                        progressContainer.querySelector('.upload-progress__label').textContent =
-                            pct < 100 ? `Đang tải lên... ${pct}%` : 'Đang phân tích AI...';
+                if (Date.now() - startTime > TIMEOUT_MS) {
+                    stopPolling();
+                    reject(new Error('Quá thời gian xử lý. Vui lòng thử lại.'));
+                    return;
+                }
+
+                polling = true;
+                try {
+                    const res = await fetch(`${API_BASE}/analyze/status/${taskId}`);
+                    const status = await res.json();
+
+                    if (status.status === 'processing' || status.status === 'pending') {
+                        // Map server progress (0-100) into 30-100% range on the bar
+                        const mappedPct = 30 + Math.round((status.progress || 0) * 0.7);
+                        setProgress(Math.min(mappedPct, 99), status.progress_message || 'Đang xử lý...');
+                    } else if (status.status === 'completed') {
+                        stopPolling();
+                        resolve(status.result);
+                    } else if (status.status === 'failed') {
+                        stopPolling();
+                        reject(new Error(status.error || 'Processing failed'));
                     }
-                };
-
-                xhr.onload = () => {
-                    if (progressContainer) progressContainer.classList.add('hidden');
-                    if (xhr.status >= 200 && xhr.status < 300) {
-                        try { resolve(JSON.parse(xhr.responseText)); }
-                        catch (e) { reject(new Error('Invalid server response')); }
-                    } else {
-                        reject(new Error(`Server error (${xhr.status}): ${xhr.responseText}`));
+                } catch (err) {
+                    // Network blip — keep polling unless aborted
+                    if (_abortController && _abortController.signal.aborted) {
+                        stopPolling();
+                        reject(new Error('Đã hủy'));
                     }
-                };
-
-                xhr.onerror = () => {
-                    if (progressContainer) progressContainer.classList.add('hidden');
-                    reject(new Error('Network error - check your connection'));
-                };
-
-                xhr.open('POST', `${API_BASE}${endpoint}`);
-                xhr.send(formData);
-            });
-        } else {
-            const response = await fetch(`${API_BASE}${endpoint}`, {
-                method: 'POST',
-                body: formData
-            });
-
-            console.log('Response status:', response.status);
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Server error response:', errorText);
-                throw new Error(`Server error (${response.status}): ${errorText}`);
-            }
-
-            data = await response.json();
-        }
+                    console.warn('Poll error (retrying):', err);
+                } finally {
+                    polling = false;
+                }
+            }, pollInterval);
+        });
 
         console.log('Response data:', JSON.stringify(data, null, 2));
 
-        if (data.success) {
+        if (data && data.success) {
+            setProgress(100, 'Hoàn tất!');
             displayResults(data, isVideo);
-            // Reset upload zone so the user can scroll up and pick a new file immediately
             resetUploadState();
             analysisSucceeded = true;
         } else {
-            throw new Error(data.error || 'Lỗi không xác định');
+            throw new Error((data && data.error) || 'Lỗi không xác định');
         }
 
     } catch (error) {
-        console.error('Analysis error:', error);
-        console.error('Error stack:', error.stack);
-        showUploadError(`Lỗi phân tích: ${error.message || error.toString()}`);
-    } finally {
-        document.getElementById('loading-state').classList.add('hidden');
-        if (progressContainer) progressContainer.classList.add('hidden');
-        // On error: re-enable button so the user can retry with the same file.
-        // On success: button stays disabled — resetUploadState() already handled it.
-        if (!analysisSucceeded) {
-            document.getElementById('analyze-btn').disabled = false;
+        if (error.message !== 'Đã hủy') {
+            console.error('Analysis error:', error);
+            showUploadError(`Lỗi phân tích: ${error.message || error.toString()}`);
         }
+    } finally {
+        finishAnalysis(analysisSucceeded);
+    }
+}
+
+function finishAnalysis(succeeded) {
+    stopPolling();
+    document.getElementById('loading-state').classList.add('hidden');
+    const progressContainer = document.getElementById('upload-progress');
+    if (progressContainer) progressContainer.classList.add('hidden');
+    const cancelBtn = document.getElementById('cancel-analysis-btn');
+    if (cancelBtn) cancelBtn.classList.add('hidden');
+    if (!succeeded) {
+        document.getElementById('analyze-btn').disabled = false;
     }
 }
 

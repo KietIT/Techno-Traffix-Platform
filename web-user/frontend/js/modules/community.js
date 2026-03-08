@@ -1134,6 +1134,10 @@ function startAutoRefresh() {
 }
 
 async function checkForNewPosts() {
+    // Skip if community tab is not active — avoid unnecessary fetches every 30s
+    const communityPanel = document.getElementById('tab-community');
+    if (!communityPanel || !communityPanel.classList.contains('tab-panel--active')) return;
+
     try {
         const res = await fetch(`${API_BASE}/posts?session_id=${sessionId}&since=${allPosts[0]?.created_at || ''}`);
         const data = await res.json();

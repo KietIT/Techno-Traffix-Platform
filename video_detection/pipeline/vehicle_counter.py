@@ -107,7 +107,7 @@ class VehicleCounter:
         self.dedup_distance = dedup_distance
         self.dedup_frames = max(1, int(dedup_time_window * fps))
 
-        # Per-class cumulative counts
+        # Per-class cumulative counts (line-crossing only)
         self._counts: Dict[str, int] = {}
 
         # Layer 1: track IDs that have already been counted
@@ -121,6 +121,10 @@ class VehicleCounter:
 
         # Previous centroid per track_id for crossing detection
         self._prev_centroids: Dict[int, Tuple[float, float]] = {}
+
+        # Unique-track counting: all unique track IDs seen for ≥ min_track_length frames
+        self._unique_track_classes: Dict[int, str] = {}   # track_id → class_name
+        self._unique_counts: Dict[str, int] = {}           # per-class unique counts
 
         logger.info(
             f"VehicleCounter initialized: line_y={self.line_y}px "
@@ -150,6 +154,15 @@ class VehicleCounter:
             e for e in self._crossing_registry
             if frame_id - e.frame_id <= self.dedup_frames
         ]
+
+        # Unique-track counting: register any track with enough history
+        for obj in tracked_objects:
+            if obj.track_id not in self._unique_track_classes:
+                if len(obj.centroid_history) >= self.min_track_length:
+                    self._unique_track_classes[obj.track_id] = obj.class_name
+                    self._unique_counts[obj.class_name] = (
+                        self._unique_counts.get(obj.class_name, 0) + 1
+                    )
 
         for obj in tracked_objects:
             track_id = obj.track_id
@@ -238,12 +251,20 @@ class VehicleCounter:
         return self.line_y
 
     def get_counts(self) -> Dict[str, int]:
-        """Return current per-class counts."""
+        """Return current per-class counts (line-crossing only)."""
         return dict(self._counts)
 
     def get_total(self) -> int:
-        """Return total vehicles counted across all classes."""
+        """Return total vehicles counted via line crossing."""
         return sum(self._counts.values())
+
+    def get_unique_counts(self) -> Dict[str, int]:
+        """Return per-class counts of all unique tracked vehicles."""
+        return dict(self._unique_counts)
+
+    def get_unique_total(self) -> int:
+        """Return total unique tracked vehicles (regardless of line crossing)."""
+        return sum(self._unique_counts.values())
 
     # ------------------------------------------------------------------
     # Result builder
@@ -300,4 +321,6 @@ class VehicleCounter:
         self._crossing_registry.clear()
         self._all_crossings.clear()
         self._prev_centroids.clear()
+        self._unique_track_classes.clear()
+        self._unique_counts.clear()
         logger.info("VehicleCounter reset")

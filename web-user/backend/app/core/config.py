@@ -21,6 +21,7 @@ VIDEO_DETECTION_CONFIG = VIDEO_DETECTION_DIR / "config" / "config.yaml"
 
 # Trained model paths
 VEHICLE_DETECTION_MODEL = VIDEO_DETECTION_DIR / "vehicle_detection_yolov8l.pt"
+AMBULANCE_DETECTION_MODEL = VIDEO_DETECTION_DIR / "vehicle_detection_yolov8l_ambulance.pt"
 ACCIDENT_CLASSIFICATION_MODEL = VIDEO_DETECTION_DIR / "accident_classification_yolov8l.pt"
 TRAFFIC_CLASSIFICATION_MODEL = VIDEO_DETECTION_DIR / "traffic_classification_yolov8l.pt"
 

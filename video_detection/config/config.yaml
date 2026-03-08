@@ -3,7 +3,7 @@
 
 # Model Configuration
 model:
-  path: "yolov8l.pt"  # Path to YOLOv8 model (can be changed to yolov9, yolov10, etc.)
+  path: "vehicle_detection_yolov8l.pt"  # Path to YOLOv8 model (can be changed to yolov9, yolov10, etc.)
   conf_threshold: 0.25  # LOWERED from 0.5 - catch small/distant/occluded vehicles
   iou_threshold: 0.55   # INCREASED from 0.45 - keep more vehicles that are close together
   device: "cpu"  # cuda or cpu (use cpu for cloud deployment without GPU)
@@ -14,6 +14,7 @@ model:
     car: 0.30
     truck: 0.35
     bus: 0.35
+    ambulance: 0.30   # Emergency vehicles — same sensitivity as cars
   
   # Size filtering to reduce false positives
   min_box_area: 400       # Minimum detection area in pixels (20x20)

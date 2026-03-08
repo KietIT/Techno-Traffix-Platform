@@ -1,16 +1,20 @@
 # AI Detection Service - Using Custom Trained Models
 # Uses 3 YOLOv8 models: vehicle detection, accident classification, traffic jam classification
 
+import gc
 import sys
 import subprocess
+import threading
 import cv2
 import numpy as np
+import torch
 from pathlib import Path
-from typing import Dict, Any, List, Tuple
+from typing import Callable, Dict, Any, List, Optional, Tuple
 
 from app.core.config import (
     VIDEO_DETECTION_DIR,
     VEHICLE_DETECTION_MODEL,
+    AMBULANCE_DETECTION_MODEL,
     ACCIDENT_CLASSIFICATION_MODEL,
     TRAFFIC_CLASSIFICATION_MODEL,
     PROCESSED_DIR,
@@ -38,6 +42,11 @@ class AIService:
 
     def _initialize_models(self):
         """Initialize all three trained models."""
+        # Inference lock — YOLO models are not thread-safe.  Serializes all
+        # calls to process_image / process_video even if something bypasses
+        # the TaskManager's single-worker constraint.
+        self._inference_lock = threading.Lock()
+
         print("Initializing AI Models...")
 
         # Load Vehicle Detection Model (Object Detection)
@@ -47,6 +56,14 @@ class AIService:
         else:
             print(f"WARNING: Vehicle detection model not found, using default yolov8l.pt")
             self.vehicle_model = YOLO("yolov8l.pt")
+
+        # Load Ambulance Detection Model (dedicated fine-tuned model)
+        if AMBULANCE_DETECTION_MODEL.exists():
+            print(f"Loading ambulance detection model: {AMBULANCE_DETECTION_MODEL}")
+            self.ambulance_model = YOLO(str(AMBULANCE_DETECTION_MODEL))
+        else:
+            print(f"WARNING: Ambulance detection model not found at {AMBULANCE_DETECTION_MODEL}")
+            self.ambulance_model = None
 
         # Load Accident Classification Model
         if ACCIDENT_CLASSIFICATION_MODEL.exists():
@@ -193,41 +210,86 @@ class AIService:
                 return is_jam, confidence, status_text
         return False, 0.0, "Không xác định"
 
-    def _detect_vehicles(self, frame: np.ndarray) -> Tuple[np.ndarray, int]:
+    def _detect_vehicles(self, frame: np.ndarray) -> Tuple[np.ndarray, int, bool]:
         """
-        Detect vehicles in frame and draw bounding boxes.
-        Returns: (annotated_frame, vehicle_count)
+        Detect vehicles in frame using dual-model approach and draw bounding boxes.
+        - vehicle_model: car, truck, motorcycle, bus (skip ambulance)
+        - ambulance_model: ambulance only
+        Returns: (annotated_frame, vehicle_count, ambulance_detected)
         """
         results = self.vehicle_model(frame, verbose=False, conf=0.25)
 
         annotated_frame = frame.copy()
         vehicle_count = 0
+        ambulance_detected = False
 
         if results and len(results) > 0:
             boxes = results[0].boxes
             if boxes is not None:
-                vehicle_count = len(boxes)
-                # Draw annotations
+                # Count only non-ambulance detections from general model
+                for box in boxes:
+                    class_name = self.vehicle_model.names[int(box.cls[0])]
+                    if class_name != "ambulance":
+                        vehicle_count += 1
+                # Draw annotations from general model
                 annotated_frame = results[0].plot()
 
-        return annotated_frame, vehicle_count
+        # Ambulance detection using dedicated fine-tuned model (threshold: 0.4)
+        if self.ambulance_model is not None:
+            amb_results = self.ambulance_model(frame, verbose=False, conf=0.4)
+            if amb_results and len(amb_results) > 0:
+                amb_boxes = amb_results[0].boxes
+                if amb_boxes is not None:
+                    for box in amb_boxes:
+                        class_name = self.ambulance_model.names[int(box.cls[0])]
+                        if class_name == "ambulance":
+                            vehicle_count += 1
+                            ambulance_detected = True
+                            # Draw ambulance boxes on annotated frame
+                            x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
+                            cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
+                            conf = float(box.conf[0])
+                            cv2.putText(annotated_frame, f"ambulance {conf:.2f}",
+                                        (x1, max(y1 - 8, 10)),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
 
-    def process_image(self, input_path: Path, output_path: Path) -> Dict[str, Any]:
+        return annotated_frame, vehicle_count, ambulance_detected
+
+    def process_image(
+        self,
+        input_path: Path,
+        output_path: Path,
+        progress_callback: Optional[Callable] = None,
+    ) -> Dict[str, Any]:
         """Process a single image for traffic and accident detection."""
         frame = cv2.imread(str(input_path))
         if frame is None:
             raise RuntimeError("Failed to read image")
 
         print(f"Processing image: {input_path}")
+        if progress_callback:
+            progress_callback(30, "Đang phát hiện phương tiện...")
 
-        # 1. Detect vehicles and annotate
-        annotated_frame, vehicle_count = self._detect_vehicles(frame)
+        with self._inference_lock, torch.no_grad():
+            # 1. Detect vehicles and annotate
+            annotated_frame, vehicle_count, ambulance_detected = self._detect_vehicles(frame)
+            if progress_callback:
+                progress_callback(60, "Đang phân loại tai nạn...")
 
-        # 2. Classify accident
-        is_accident, accident_conf = self._classify_accident(frame)
+            # 2. Classify accident
+            is_accident, accident_conf = self._classify_accident(frame)
+            if progress_callback:
+                progress_callback(80, "Đang phân loại giao thông...")
 
-        # 3. Classify traffic jam
-        is_jam, traffic_conf, traffic_status = self._classify_traffic(frame)
+            # 3. Classify traffic jam
+            is_jam, traffic_conf, traffic_status = self._classify_traffic(frame)
+
+        # Override: when ambulance detected, hardcode clear traffic & no accident
+        if ambulance_detected:
+            traffic_status = "Thông thoáng"
+            is_jam = False
+            is_accident = False
+            accident_conf = 0.0
 
         # Save output image (no overlay - results shown on website only)
         cv2.imwrite(str(output_path), annotated_frame)
@@ -235,7 +297,10 @@ class AIService:
         if not output_path.exists() or output_path.stat().st_size == 0:
             raise RuntimeError("Failed to save output image")
 
-        print(f"Results: Traffic={traffic_status}, Accident={is_accident}, Jam={is_jam}")
+        if progress_callback:
+            progress_callback(95, "Đang lưu kết quả...")
+
+        print(f"Results: Traffic={traffic_status}, Accident={is_accident}, Jam={is_jam}, Ambulance={ambulance_detected}")
 
         return {
             "traffic_status": traffic_status,
@@ -245,7 +310,12 @@ class AIService:
             "accident_confidence": accident_conf,
         }
 
-    def process_video(self, input_path: Path, output_path: Path) -> Dict[str, Any]:
+    def process_video(
+        self,
+        input_path: Path,
+        output_path: Path,
+        progress_callback: Optional[Callable] = None,
+    ) -> Dict[str, Any]:
         """
         Process a video with ByteTrack vehicle tracking + VehicleCounter.
 
@@ -287,7 +357,14 @@ class AIService:
             raise RuntimeError("No suitable video codec found")
 
         # --- Vehicle counter ---
-        counter = VehicleCounter(frame_height=height, line_position=0.5, fps=fps)
+        counter = VehicleCounter(
+            frame_height=height,
+            line_position=0.5,
+            min_track_length=2,
+            dedup_distance=40.0,
+            dedup_time_window=1.5,
+            fps=fps,
+        )
 
         # Track history for building TrackedObject with centroid history
         track_histories: Dict[int, TrackedObject] = {}
@@ -311,9 +388,17 @@ class AIService:
         frame_id = 0
         accident_frames = 0
         jam_frames = 0
+        ambulance_detected_in_video = False
+
+        if progress_callback:
+            progress_callback(5, "Đang khởi tạo xử lý video...")
 
         cap = cv2.VideoCapture(str(input_path))
         try:
+          with self._inference_lock, torch.no_grad():
+            # Reset ByteTrack's internal tracker state from any previous video
+            self.vehicle_model.predictor = None
+
             while cap.isOpened():
                 ret, frame = cap.read()
                 if not ret:
@@ -343,6 +428,9 @@ class AIService:
                         conf = float(box.conf[0])
                         x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
                         raw_name = self.vehicle_model.names.get(class_id, "unknown")
+                        # Skip ambulance from general model — use dedicated model
+                        if raw_name.lower() == "ambulance":
+                            continue
                         cls_name = CLASS_MAP.get(raw_name.lower(), raw_name.lower())
                         centroid = ((x1 + x2) / 2.0, (y1 + y2) / 2.0)
                         active_ids.add(track_id)
@@ -384,6 +472,26 @@ class AIService:
                             cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1,
                         )
 
+                # Ambulance detection using dedicated fine-tuned model (threshold: 0.4)
+                if self.ambulance_model is not None:
+                    amb_results = self.ambulance_model(frame, verbose=False, conf=0.4)
+                    if amb_results and len(amb_results) > 0:
+                        amb_boxes = amb_results[0].boxes
+                        if amb_boxes is not None:
+                            for box in amb_boxes:
+                                class_name = self.ambulance_model.names[int(box.cls[0])]
+                                if class_name == "ambulance":
+                                    ambulance_detected_in_video = True
+                                    x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
+                                    conf = float(box.conf[0])
+                                    # Draw ambulance box
+                                    cv2.rectangle(annotated, (x1, y1), (x2, y2), (255, 0, 0), 2)
+                                    cv2.putText(
+                                        annotated, f"ambulance {conf:.2f}",
+                                        (x1, max(y1 - 8, 10)),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 0, 0), 1,
+                                    )
+
                 # Prune stale track histories
                 stale = [
                     tid for tid, obj in track_histories.items()
@@ -402,10 +510,11 @@ class AIService:
                     annotated, "COUNT LINE", (8, line_y - 6),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1,
                 )
-                counts_now = counter.get_counts()
+                # Use unique-track counts (all tracked vehicles, not just line-crossers)
+                counts_now = counter.get_unique_counts()
                 y_off = 24
                 cv2.putText(
-                    annotated, f"Vehicles: {counter.get_total()}",
+                    annotated, f"Vehicles: {counter.get_unique_total()}",
                     (8, y_off), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 255), 2,
                 )
                 for cls, cnt in counts_now.items():
@@ -431,12 +540,21 @@ class AIService:
                     pct = (frame_id / total_frames * 100) if total_frames > 0 else 0
                     print(f"  Progress: {frame_id}/{total_frames} ({pct:.1f}%) | "
                           f"vehicles: {counts_now}")
+                    if progress_callback:
+                        # Map frame progress to 5-90% range
+                        mapped_pct = 5 + int(pct * 0.85)
+                        progress_callback(
+                            min(mapped_pct, 90),
+                            f"Đang xử lý frame {frame_id}/{total_frames} ({pct:.0f}%)",
+                        )
 
         finally:
             cap.release()
             out.release()
 
         # Re-encode to browser-compatible H.264/yuv420p
+        if progress_callback:
+            progress_callback(92, "Đang chuyển đổi video cho trình duyệt...")
         print("Transcoding output video for browser compatibility...")
         self._transcode_for_browser(final_output_path)
 
@@ -445,6 +563,12 @@ class AIService:
         jam_detected = jam_frames > total_samples * 0.3
         accident_detected = accident_frames > 0
         traffic_status = "Tắc nghẽn" if jam_detected else "Thông thoáng"
+
+        # Override: when ambulance detected, hardcode clear traffic & no accident
+        if ambulance_detected_in_video:
+            traffic_status = "Thông thoáng"
+            jam_detected = False
+            accident_detected = False
 
         # ---- Build CountResult for JSON export ----
         count_result = counter.build_result(
@@ -457,17 +581,29 @@ class AIService:
         if not final_output_path.exists() or final_output_path.stat().st_size == 0:
             raise RuntimeError("Output video file was not created")
 
+        # Use unique-track counts (more accurate than line-crossing only)
+        unique_counts = counter.get_unique_counts()
+        unique_total = counter.get_unique_total()
+
+        # Explicit cleanup of large objects
+        del track_histories
+        del counter
+        gc.collect()
+
+        if progress_callback:
+            progress_callback(98, "Đang hoàn tất...")
+
         print(f"Output: {final_output_path} "
               f"({final_output_path.stat().st_size / 1024 / 1024:.2f} MB)")
         print(f"Traffic={traffic_status}, Accident={accident_detected}, "
-              f"Vehicle counts={count_result.vehicle_counts}")
+              f"Vehicle counts={unique_counts} (total: {unique_total})")
 
         return {
             "traffic_status": traffic_status,
             "is_traffic_jam": jam_detected,
             "accident_detected": accident_detected,
-            "vehicle_counts": count_result.vehicle_counts,
-            "total_vehicles": count_result.total_vehicles,
+            "vehicle_counts": unique_counts,
+            "total_vehicles": unique_total,
             "count_result": count_result,
             "output_filename": final_output_path.name,
         }
