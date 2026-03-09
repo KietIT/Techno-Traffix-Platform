@@ -21,7 +21,7 @@ import logging
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import cv2
 import numpy as np
@@ -34,7 +34,7 @@ if str(_VD_DIR) not in sys.path:
     sys.path.insert(0, str(_VD_DIR))
 
 # Pre-trained models already in the repo — no download needed
-_VEHICLE_MODEL = str(_VD_DIR / "vehicle_detection_yolov8l.pt")
+_VEHICLE_MODEL = str(_VD_DIR / "yolo26l.pt")
 _AMBULANCE_MODEL = str(_VD_DIR / "vehicle_detection_yolov8l_ambulance.pt")
 _DEFAULT_ACCIDENT_MODEL = str(_VD_DIR / "accident_classification_yolov8l.pt")
 
@@ -42,7 +42,8 @@ DIRECTIONS = ["east", "west", "south", "north"]
 
 CLASS_MAP = {
     "car": "car", "xe_oto": "car",
-    "truck": "truck", "xe_tai": "truck", "bus": "truck",
+    "truck": "truck", "xe_tai": "truck",
+    "bus": "bus",
     "motorcycle": "motorcycle", "moto": "motorcycle", "xe_may": "motorcycle",
     "ambulance": "ambulance",
 }
@@ -51,11 +52,50 @@ BBOX_COLORS = {
     "car": (0, 255, 0),
     "motorcycle": (255, 255, 0),
     "truck": (0, 165, 255),
+    "bus": (255, 165, 0),
     "ambulance": (255, 0, 0),
 }
 
+# COCO class IDs for vehicles — used to filter yolo26l detections
+VEHICLE_CLASSES = [2, 3, 5, 7]  # car, motorcycle, bus, truck
+
+# Map COCO class names to our unified names
+COCO_CLASS_MAP = {
+    "car": "car",
+    "motorcycle": "motorcycle",
+    "bus": "bus",
+    "truck": "truck",
+}
+
+# Map ambulance model class names (skip non-ambulance classes)
+AMBULANCE_MODEL_TARGET = "ambulance"
+
 HISTORY_LEN = 30
 TRACK_BUFFER = 50  # frames before a lost track is pruned
+
+# Default detection region polygon (from test.py calibration).
+# Only detections whose centroid falls inside this polygon are kept.
+# Set to None to disable region filtering.
+DEFAULT_REGION_POINTS = [[379, 1500], [1690, 1500], [1542, 450], [700, 444]]
+
+
+def is_inside_region(centroid: tuple, region: np.ndarray) -> bool:
+    """Check if a centroid point is inside a polygon region."""
+    return cv2.pointPolygonTest(region, (float(centroid[0]), float(centroid[1])), False) >= 0
+
+
+def compute_iou(box1: tuple, box2: tuple) -> float:
+    """Compute IoU between two (x1,y1,x2,y2) bounding boxes."""
+    x1 = max(box1[0], box2[0])
+    y1 = max(box1[1], box2[1])
+    x2 = min(box1[2], box2[2])
+    y2 = min(box1[3], box2[3])
+    inter = max(0, x2 - x1) * max(0, y2 - y1)
+    if inter == 0:
+        return 0.0
+    area1 = (box1[2] - box1[0]) * (box1[3] - box1[1])
+    area2 = (box2[2] - box2[0]) * (box2[3] - box2[1])
+    return inter / (area1 + area2 - inter)
 
 
 def setup_logging(level: str = "INFO") -> None:
@@ -135,13 +175,12 @@ def process_image(
 
     #=====================================Vehicle counting=====================================
     # General vehicle detection (car, truck, motorcycle, bus)
-    veh_results = vehicle_model(frame, conf=0.25, verbose=False)
+    veh_results = vehicle_model(frame, conf=0.25, verbose=False, classes=VEHICLE_CLASSES)
     if veh_results and veh_results[0].boxes is not None:
         for box in veh_results[0].boxes:
-            class_name = vehicle_model.names[int(box.cls[0])]
-            if class_name == "ambulance":
-                continue  # skip ambulance from this model — use dedicated model instead
-            vehicle_counts[class_name] = vehicle_counts.get(class_name, 0) + 1
+            raw_name = vehicle_model.names[int(box.cls[0])]
+            cls_name = COCO_CLASS_MAP.get(raw_name, raw_name)
+            vehicle_counts[cls_name] = vehicle_counts.get(cls_name, 0) + 1
 
     # Ambulance detection (dedicated fine-tuned model)
     amb_results = ambulance_model(frame, conf=0.25, verbose=False)
@@ -218,6 +257,7 @@ def process_video(
     accident_model: YOLO,
     video_path: str,
     output_dir: Path,
+    region_points: Optional[List[List[int]]] = None,
 ) -> dict:
     """
     Process a video with ByteTrack vehicle tracking.
@@ -228,8 +268,8 @@ def process_video(
     Returns:
         Result dict with vehicle counts and output file path.
     """
-    from pipeline.vehicle_counter import VehicleCounter
-    from tracker.bytetrack_tracker import TrackedObject
+    from video_detection.pipeline.vehicle_counter import VehicleCounter
+    from video_detection.tracker.bytetrack_tracker import TrackedObject
 
     logger = logging.getLogger(__name__)
 
@@ -244,6 +284,12 @@ def process_video(
 
     logger.info(f"Input video: {width}x{height} @ {fps}fps, {total_frames} frames")
 
+    # Region polygon for filtering detections
+    region = None
+    if region_points is not None:
+        region = np.array(region_points, dtype=np.int32)
+        logger.info(f"Region filter enabled with {len(region_points)} points")
+
     # Output path
     output_dir.mkdir(parents=True, exist_ok=True)
     video_name = Path(video_path).stem
@@ -253,7 +299,7 @@ def process_video(
     out = None
     for codec in ["mp4v", "XVID", "MJPG"]:
         try:
-            fourcc = cv2.VideoWriter_fourcc(*codec)
+            fourcc = cv2.VideoWriter_fourcc(*codec) # type: ignore
             test = cv2.VideoWriter(str(output_path), fourcc, fps, (width, height))
             if test.isOpened():
                 out = test
@@ -303,12 +349,38 @@ def process_video(
                 iou=0.55,
                 tracker="bytetrack.yaml",
                 verbose=False,
+                classes=VEHICLE_CLASSES,
             )
 
             annotated = frame.copy()
             tracked_objects: List[TrackedObject] = []
             active_ids: set = set()
 
+            # ---- Ambulance detection FIRST (dedicated model) ----
+            # Detect ambulances before general vehicles so we can suppress
+            # overlapping general-model boxes (e.g. truck bbox on an ambulance).
+            ambulance_bboxes: List[tuple] = []
+            amb_results = ambulance_model(frame, verbose=False, conf=0.4)
+            if amb_results and amb_results[0].boxes is not None:
+                for box in amb_results[0].boxes:
+                    class_name = ambulance_model.names[int(box.cls[0])]
+                    if class_name == "ambulance":
+                        x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
+                        centroid = ((x1 + x2) / 2.0, (y1 + y2) / 2.0)
+                        # Region filter: skip if outside region
+                        if region is not None and not is_inside_region(centroid, region):
+                            continue
+                        ambulance_detected_in_video = True
+                        ambulance_bboxes.append((x1, y1, x2, y2))
+                        conf = float(box.conf[0])
+                        cv2.rectangle(annotated, (x1, y1), (x2, y2), (255, 0, 0), 2)
+                        cv2.putText(
+                            annotated, f"ambulance {conf:.2f}",
+                            (x1, max(y1 - 8, 10)),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 0, 0), 1,
+                        )
+
+            # ---- General vehicle detections (with IoU suppression) ----
             boxes = results[0].boxes if results else None
             if boxes is not None:
                 for box in boxes:
@@ -319,11 +391,24 @@ def process_video(
                     conf = float(box.conf[0])
                     x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
                     raw_name = vehicle_model.names.get(class_id, "unknown")
-                    # Skip ambulance from general model — use dedicated model
-                    if raw_name.lower() == "ambulance":
-                        continue
-                    cls_name = CLASS_MAP.get(raw_name.lower(), raw_name.lower())
+                    cls_name = COCO_CLASS_MAP.get(raw_name, raw_name)
                     centroid = ((x1 + x2) / 2.0, (y1 + y2) / 2.0)
+
+                    # Region filter: skip if outside region
+                    if region is not None and not is_inside_region(centroid, region):
+                        continue
+
+                    # IoU suppression: skip general-model detections that overlap
+                    # significantly with an ambulance detection (prevents duplicate
+                    # truck + ambulance bboxes on the same vehicle)
+                    suppressed = False
+                    for amb_box in ambulance_bboxes:
+                        if compute_iou((x1, y1, x2, y2), amb_box) > 0.3:
+                            suppressed = True
+                            break
+                    if suppressed:
+                        continue
+
                     active_ids.add(track_id)
 
                     # Update or create track history
@@ -363,22 +448,6 @@ def process_video(
                         cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1,
                     )
 
-            # Ambulance detection using dedicated fine-tuned model
-            amb_results = ambulance_model(frame, verbose=False, conf=0.4)
-            if amb_results and amb_results[0].boxes is not None:
-                for box in amb_results[0].boxes:
-                    class_name = ambulance_model.names[int(box.cls[0])]
-                    if class_name == "ambulance":
-                        ambulance_detected_in_video = True
-                        x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
-                        conf = float(box.conf[0])
-                        cv2.rectangle(annotated, (x1, y1), (x2, y2), (255, 0, 0), 2)
-                        cv2.putText(
-                            annotated, f"ambulance {conf:.2f}",
-                            (x1, max(y1 - 8, 10)),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 0, 0), 1,
-                        )
-
             # Prune stale track histories
             stale = [
                 tid for tid, obj in track_histories.items()
@@ -404,6 +473,10 @@ def process_video(
                     annotated, f"  {cls}: {cnt}",
                     (x_off, y_off), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 255), 1,
                 )
+
+            # ---- Draw region polygon overlay ----
+            if region is not None:
+                cv2.polylines(annotated, [region], isClosed=True, color=(0, 255, 255), thickness=2)
 
             # ---- Classification sampling ----
             if frame_id % sample_interval == 0:
@@ -467,7 +540,11 @@ def run_video_mode(args, vehicle_model: YOLO, ambulance_model: YOLO, accident_mo
     logger = logging.getLogger(__name__)
     output_dir = Path(args.output_dir)
 
-    process_video(vehicle_model, ambulance_model, accident_model, args.video, output_dir)
+    region_points = DEFAULT_REGION_POINTS
+    if args.no_region:
+        region_points = None
+
+    process_video(vehicle_model, ambulance_model, accident_model, args.video, output_dir, region_points)
     logger.info("Done. Output written to: %s", output_dir.resolve())
 
 
@@ -508,6 +585,11 @@ def main() -> None:
         help="Path to YAML config file (default: built-in defaults)",
     )
     parser.add_argument(
+        "--no-region",
+        action="store_true",
+        help="Disable region-based filtering in video mode (process full frame)",
+    )
+    parser.add_argument(
         "--log-level",
         type=str,
         default="INFO",
@@ -519,12 +601,8 @@ def main() -> None:
     logger = logging.getLogger(__name__)
 
     # Load models once, reuse across processing
-    logger.info("Loading vehicle detection model...")
     vehicle_model = YOLO(_VEHICLE_MODEL)
-    logger.info(f"Vehicle model classes: {vehicle_model.names}")
-    logger.info("Loading ambulance detection model...")
     ambulance_model = YOLO(_AMBULANCE_MODEL)
-    logger.info("Loading accident classification model...")
     accident_model = load_accident_model()
 
     if args.images:
