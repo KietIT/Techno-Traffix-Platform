@@ -1,0 +1,93 @@
+{
+  "video_source": "input_1772621028565.mp4",
+  "processed_at": "2026-03-04T17:44:40.587316",
+  "total_frames": 489,
+  "duration_seconds": 16.3,
+  "fps": 30,
+  "vehicle_counts": {
+    "motorcycle": 3,
+    "car": 2,
+    "truck": 6
+  },
+  "total_vehicles": 11,
+  "accidents_detected": 0,
+  "crossing_events": [
+    {
+      "track_id": 181,
+      "class_name": "motorcycle",
+      "x_position": 1216.5,
+      "frame_id": 9,
+      "timestamp": 0.3
+    },
+    {
+      "track_id": 159,
+      "class_name": "car",
+      "x_position": 355.5,
+      "frame_id": 31,
+      "timestamp": 1.033
+    },
+    {
+      "track_id": 224,
+      "class_name": "motorcycle",
+      "x_position": 1239.0,
+      "frame_id": 179,
+      "timestamp": 5.967
+    },
+    {
+      "track_id": 222,
+      "class_name": "truck",
+      "x_position": 490.0,
+      "frame_id": 185,
+      "timestamp": 6.167
+    },
+    {
+      "track_id": 219,
+      "class_name": "truck",
+      "x_position": 534.5,
+      "frame_id": 207,
+      "timestamp": 6.9
+    },
+    {
+      "track_id": 278,
+      "class_name": "motorcycle",
+      "x_position": 1255.5,
+      "frame_id": 305,
+      "timestamp": 10.167
+    },
+    {
+      "track_id": 261,
+      "class_name": "truck",
+      "x_position": 348.5,
+      "frame_id": 314,
+      "timestamp": 10.467
+    },
+    {
+      "track_id": 268,
+      "class_name": "truck",
+      "x_position": 399.5,
+      "frame_id": 332,
+      "timestamp": 11.067
+    },
+    {
+      "track_id": 299,
+      "class_name": "truck",
+      "x_position": 1239.0,
+      "frame_id": 347,
+      "timestamp": 11.567
+    },
+    {
+      "track_id": 286,
+      "class_name": "truck",
+      "x_position": 355.0,
+      "frame_id": 365,
+      "timestamp": 12.167
+    },
+    {
+      "track_id": 314,
+      "class_name": "car",
+      "x_position": 1226.5,
+      "frame_id": 412,
+      "timestamp": 13.733
+    }
+  ]
+}

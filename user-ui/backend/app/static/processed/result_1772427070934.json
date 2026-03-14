@@ -1,0 +1,35 @@
+{
+  "video_source": "input_1772427041719.mp4",
+  "processed_at": "2026-03-02T11:51:10.932177",
+  "total_frames": 444,
+  "duration_seconds": 14.8,
+  "fps": 30,
+  "vehicle_counts": {
+    "truck": 3
+  },
+  "total_vehicles": 3,
+  "accidents_detected": 0,
+  "crossing_events": [
+    {
+      "track_id": 7,
+      "class_name": "truck",
+      "x_position": 769.0,
+      "frame_id": 203,
+      "timestamp": 6.767
+    },
+    {
+      "track_id": 130,
+      "class_name": "truck",
+      "x_position": 531.0,
+      "frame_id": 326,
+      "timestamp": 10.867
+    },
+    {
+      "track_id": 180,
+      "class_name": "truck",
+      "x_position": 652.5,
+      "frame_id": 345,
+      "timestamp": 11.5
+    }
+  ]
+}

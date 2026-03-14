@@ -1,0 +1,418 @@
+{
+  "metadata": {
+    "document_id": "ND-168-2024",
+    "title": "Nghị định 168/2024/NĐ-CP",
+    "full_title": "Nghị định quy định xử phạt vi phạm hành chính về trật tự, an toàn giao thông đường bộ",
+    "issued_by": "Chính phủ",
+    "effective_date": "2025-01-01",
+    "replaces": ["Nghị định 100/2019/NĐ-CP", "Nghị định 123/2021/NĐ-CP"],
+    "source": "https://thuvienphapluat.vn",
+    "last_updated": "2025-01-01"
+  },
+  "categories": [
+    {
+      "id": "nong_do_con",
+      "name": "Vi phạm nồng độ cồn",
+      "description": "Quy định xử phạt vi phạm về nồng độ cồn khi điều khiển phương tiện",
+      "article": "Điều 5",
+      "violations": [
+        {
+          "id": "NDC-OTO-1",
+          "violation": "Điều khiển ô tô có nồng độ cồn chưa vượt quá 50mg/100ml máu hoặc 0.25mg/1l khí thở",
+          "vehicle_type": "oto",
+          "vehicle_type_display": "Ô tô",
+          "fine_min": 6000000,
+          "fine_max": 8000000,
+          "license_suspension_months": [10, 12],
+          "points_deducted": 4,
+          "keywords": ["nồng độ cồn", "rượu bia", "ô tô", "say rượu", "uống rượu", "uống bia"]
+        },
+        {
+          "id": "NDC-OTO-2",
+          "violation": "Điều khiển ô tô có nồng độ cồn vượt quá 50mg đến 80mg/100ml máu hoặc 0.25mg đến 0.4mg/1l khí thở",
+          "vehicle_type": "oto",
+          "vehicle_type_display": "Ô tô",
+          "fine_min": 16000000,
+          "fine_max": 18000000,
+          "license_suspension_months": [16, 18],
+          "points_deducted": 6,
+          "keywords": ["nồng độ cồn", "rượu bia", "ô tô", "say rượu"]
+        },
+        {
+          "id": "NDC-OTO-3",
+          "violation": "Điều khiển ô tô có nồng độ cồn vượt quá 80mg/100ml máu hoặc 0.4mg/1l khí thở",
+          "vehicle_type": "oto",
+          "vehicle_type_display": "Ô tô",
+          "fine_min": 30000000,
+          "fine_max": 40000000,
+          "license_suspension_months": [22, 24],
+          "points_deducted": 12,
+          "keywords": ["nồng độ cồn", "rượu bia", "ô tô", "say rượu", "say xỉn"]
+        },
+        {
+          "id": "NDC-XM-1",
+          "violation": "Điều khiển xe máy có nồng độ cồn chưa vượt quá 50mg/100ml máu hoặc 0.25mg/1l khí thở",
+          "vehicle_type": "xe_may",
+          "vehicle_type_display": "Xe máy",
+          "fine_min": 2000000,
+          "fine_max": 3000000,
+          "license_suspension_months": [10, 12],
+          "points_deducted": 4,
+          "keywords": ["nồng độ cồn", "rượu bia", "xe máy", "say rượu", "uống rượu", "uống bia"]
+        },
+        {
+          "id": "NDC-XM-2",
+          "violation": "Điều khiển xe máy có nồng độ cồn vượt quá 50mg đến 80mg/100ml máu",
+          "vehicle_type": "xe_may",
+          "vehicle_type_display": "Xe máy",
+          "fine_min": 4000000,
+          "fine_max": 6000000,
+          "license_suspension_months": [16, 18],
+          "points_deducted": 6,
+          "keywords": ["nồng độ cồn", "rượu bia", "xe máy", "say rượu"]
+        },
+        {
+          "id": "NDC-XM-3",
+          "violation": "Điều khiển xe máy có nồng độ cồn vượt quá 80mg/100ml máu hoặc 0.4mg/1l khí thở",
+          "vehicle_type": "xe_may",
+          "vehicle_type_display": "Xe máy",
+          "fine_min": 6000000,
+          "fine_max": 8000000,
+          "license_suspension_months": [22, 24],
+          "points_deducted": 12,
+          "keywords": ["nồng độ cồn", "rượu bia", "xe máy", "say rượu", "say xỉn"]
+        }
+      ]
+    },
+    {
+      "id": "toc_do",
+      "name": "Vi phạm tốc độ",
+      "description": "Quy định xử phạt vi phạm về tốc độ khi điều khiển phương tiện",
+      "article": "Điều 6",
+      "violations": [
+        {
+          "id": "TD-OTO-1",
+          "violation": "Điều khiển ô tô chạy quá tốc độ quy định từ 05 km/h đến dưới 10 km/h",
+          "vehicle_type": "oto",
+          "vehicle_type_display": "Ô tô",
+          "fine_min": 800000,
+          "fine_max": 1000000,
+          "license_suspension_months": null,
+          "points_deducted": 0,
+          "keywords": ["tốc độ", "quá tốc độ", "vượt tốc độ", "chạy nhanh", "ô tô"]
+        },
+        {
+          "id": "TD-OTO-2",
+          "violation": "Điều khiển ô tô chạy quá tốc độ quy định từ 10 km/h đến 20 km/h",
+          "vehicle_type": "oto",
+          "vehicle_type_display": "Ô tô",
+          "fine_min": 4000000,
+          "fine_max": 6000000,
+          "license_suspension_months": [1, 3],
+          "points_deducted": 2,
+          "keywords": ["tốc độ", "quá tốc độ", "vượt tốc độ", "chạy nhanh", "ô tô"]
+        },
+        {
+          "id": "TD-OTO-3",
+          "violation": "Điều khiển ô tô chạy quá tốc độ quy định trên 20 km/h đến 35 km/h",
+          "vehicle_type": "oto",
+          "vehicle_type_display": "Ô tô",
+          "fine_min": 6000000,
+          "fine_max": 8000000,
+          "license_suspension_months": [2, 4],
+          "points_deducted": 4,
+          "keywords": ["tốc độ", "quá tốc độ", "vượt tốc độ", "chạy nhanh", "ô tô"]
+        },
+        {
+          "id": "TD-OTO-4",
+          "violation": "Điều khiển ô tô chạy quá tốc độ quy định trên 35 km/h",
+          "vehicle_type": "oto",
+          "vehicle_type_display": "Ô tô",
+          "fine_min": 10000000,
+          "fine_max": 12000000,
+          "license_suspension_months": [2, 4],
+          "points_deducted": 6,
+          "keywords": ["tốc độ", "quá tốc độ", "vượt tốc độ", "chạy nhanh", "ô tô"]
+        },
+        {
+          "id": "TD-XM-1",
+          "violation": "Điều khiển xe máy chạy quá tốc độ quy định từ 05 km/h đến dưới 10 km/h",
+          "vehicle_type": "xe_may",
+          "vehicle_type_display": "Xe máy",
+          "fine_min": 300000,
+          "fine_max": 400000,
+          "license_suspension_months": null,
+          "points_deducted": 0,
+          "keywords": ["tốc độ", "quá tốc độ", "vượt tốc độ", "chạy nhanh", "xe máy"]
+        },
+        {
+          "id": "TD-XM-2",
+          "violation": "Điều khiển xe máy chạy quá tốc độ quy định từ 10 km/h đến 20 km/h",
+          "vehicle_type": "xe_may",
+          "vehicle_type_display": "Xe máy",
+          "fine_min": 800000,
+          "fine_max": 1000000,
+          "license_suspension_months": null,
+          "points_deducted": 2,
+          "keywords": ["tốc độ", "quá tốc độ", "vượt tốc độ", "chạy nhanh", "xe máy"]
+        },
+        {
+          "id": "TD-XM-3",
+          "violation": "Điều khiển xe máy chạy quá tốc độ quy định trên 20 km/h",
+          "vehicle_type": "xe_may",
+          "vehicle_type_display": "Xe máy",
+          "fine_min": 4000000,
+          "fine_max": 5000000,
+          "license_suspension_months": [2, 4],
+          "points_deducted": 4,
+          "keywords": ["tốc độ", "quá tốc độ", "vượt tốc độ", "chạy nhanh", "xe máy"]
+        }
+      ]
+    },
+    {
+      "id": "den_tin_hieu",
+      "name": "Vi phạm đèn tín hiệu giao thông",
+      "description": "Quy định xử phạt vi phạm về đèn tín hiệu giao thông",
+      "article": "Điều 7",
+      "violations": [
+        {
+          "id": "DTH-OTO-1",
+          "violation": "Điều khiển ô tô không chấp hành hiệu lệnh của đèn tín hiệu giao thông (vượt đèn đỏ/đèn vàng)",
+          "vehicle_type": "oto",
+          "vehicle_type_display": "Ô tô",
+          "fine_min": 4000000,
+          "fine_max": 6000000,
+          "license_suspension_months": [1, 3],
+          "points_deducted": 4,
+          "keywords": ["đèn đỏ", "vượt đèn đỏ", "đèn vàng", "đèn tín hiệu", "ô tô"]
+        },
+        {
+          "id": "DTH-XM-1",
+          "violation": "Điều khiển xe máy không chấp hành hiệu lệnh của đèn tín hiệu giao thông (vượt đèn đỏ/đèn vàng)",
+          "vehicle_type": "xe_may",
+          "vehicle_type_display": "Xe máy",
+          "fine_min": 800000,
+          "fine_max": 1000000,
+          "license_suspension_months": [1, 3],
+          "points_deducted": 4,
+          "keywords": ["đèn đỏ", "vượt đèn đỏ", "đèn vàng", "đèn tín hiệu", "xe máy"]
+        }
+      ]
+    },
+    {
+      "id": "nguoc_chieu",
+      "name": "Vi phạm đi ngược chiều, đường cấm",
+      "description": "Quy định xử phạt vi phạm về đi ngược chiều, vào đường cấm",
+      "article": "Điều 8",
+      "violations": [
+        {
+          "id": "NC-OTO-1",
+          "violation": "Điều khiển ô tô đi ngược chiều của đường một chiều, đi ngược chiều trên đường có biển cấm đi ngược chiều",
+          "vehicle_type": "oto",
+          "vehicle_type_display": "Ô tô",
+          "fine_min": 4000000,
+          "fine_max": 6000000,
+          "license_suspension_months": [2, 4],
+          "points_deducted": 4,
+          "keywords": ["ngược chiều", "đường một chiều", "đường cấm", "ô tô"]
+        },
+        {
+          "id": "NC-XM-1",
+          "violation": "Điều khiển xe máy đi ngược chiều của đường một chiều, đi ngược chiều trên đường có biển cấm",
+          "vehicle_type": "xe_may",
+          "vehicle_type_display": "Xe máy",
+          "fine_min": 1000000,
+          "fine_max": 2000000,
+          "license_suspension_months": [1, 3],
+          "points_deducted": 2,
+          "keywords": ["ngược chiều", "đường một chiều", "đường cấm", "xe máy"]
+        }
+      ]
+    },
+    {
+      "id": "lang_lach",
+      "name": "Vi phạm lạng lách, đánh võng",
+      "description": "Quy định xử phạt vi phạm về lạng lách, đánh võng",
+      "article": "Điều 9",
+      "violations": [
+        {
+          "id": "LL-XM-1",
+          "violation": "Điều khiển xe máy lạng lách, đánh võng trên đường bộ",
+          "vehicle_type": "xe_may",
+          "vehicle_type_display": "Xe máy",
+          "fine_min": 6000000,
+          "fine_max": 8000000,
+          "license_suspension_months": [2, 4],
+          "points_deducted": 6,
+          "keywords": ["lạng lách", "đánh võng", "bốc đầu", "xe máy"]
+        },
+        {
+          "id": "LL-XM-2",
+          "violation": "Điều khiển xe máy lạng lách, đánh võng gây tai nạn giao thông",
+          "vehicle_type": "xe_may",
+          "vehicle_type_display": "Xe máy",
+          "fine_min": 10000000,
+          "fine_max": 14000000,
+          "license_suspension_months": [3, 5],
+          "points_deducted": 12,
+          "keywords": ["lạng lách", "đánh võng", "bốc đầu", "tai nạn", "xe máy"]
+        }
+      ]
+    },
+    {
+      "id": "giay_to",
+      "name": "Vi phạm về giấy tờ xe",
+      "description": "Quy định xử phạt vi phạm về giấy tờ xe, GPLX",
+      "article": "Điều 10",
+      "violations": [
+        {
+          "id": "GT-XM-1",
+          "violation": "Điều khiển xe máy dưới 175cm3 mà không có Giấy phép lái xe",
+          "vehicle_type": "xe_may",
+          "vehicle_type_display": "Xe máy dưới 175cm3",
+          "fine_min": 1000000,
+          "fine_max": 2000000,
+          "license_suspension_months": null,
+          "points_deducted": 0,
+          "keywords": ["giấy phép lái xe", "GPLX", "bằng lái", "không có bằng", "xe máy"]
+        },
+        {
+          "id": "GT-XM-2",
+          "violation": "Điều khiển xe máy trên 175cm3 hoặc ô tô mà không có Giấy phép lái xe",
+          "vehicle_type": "oto",
+          "vehicle_type_display": "Xe máy trên 175cm3, Ô tô",
+          "fine_min": 10000000,
+          "fine_max": 12000000,
+          "license_suspension_months": null,
+          "points_deducted": 0,
+          "keywords": ["giấy phép lái xe", "GPLX", "bằng lái", "không có bằng", "ô tô"]
+        },
+        {
+          "id": "GT-MANG-1",
+          "violation": "Không mang theo Giấy phép lái xe, Đăng ký xe, Bảo hiểm khi điều khiển phương tiện",
+          "vehicle_type": "chung",
+          "vehicle_type_display": "Tất cả phương tiện",
+          "fine_min": 100000,
+          "fine_max": 400000,
+          "license_suspension_months": null,
+          "points_deducted": 0,
+          "keywords": ["không mang theo", "giấy tờ", "GPLX", "đăng ký xe", "bảo hiểm"]
+        }
+      ]
+    },
+    {
+      "id": "dien_thoai",
+      "name": "Vi phạm sử dụng điện thoại",
+      "description": "Quy định xử phạt vi phạm về sử dụng điện thoại khi lái xe",
+      "article": "Điều 11",
+      "violations": [
+        {
+          "id": "DT-OTO-1",
+          "violation": "Điều khiển ô tô sử dụng điện thoại di động, thiết bị điện tử khi đang lái xe",
+          "vehicle_type": "oto",
+          "vehicle_type_display": "Ô tô",
+          "fine_min": 2000000,
+          "fine_max": 3000000,
+          "license_suspension_months": [1, 3],
+          "points_deducted": 2,
+          "keywords": ["điện thoại", "sử dụng điện thoại", "dùng điện thoại", "cầm điện thoại", "ô tô"]
+        },
+        {
+          "id": "DT-XM-1",
+          "violation": "Điều khiển xe máy sử dụng điện thoại di động, thiết bị điện tử khi đang lái xe",
+          "vehicle_type": "xe_may",
+          "vehicle_type_display": "Xe máy",
+          "fine_min": 800000,
+          "fine_max": 1000000,
+          "license_suspension_months": [1, 3],
+          "points_deducted": 2,
+          "keywords": ["điện thoại", "sử dụng điện thoại", "dùng điện thoại", "cầm điện thoại", "xe máy"]
+        }
+      ]
+    },
+    {
+      "id": "mu_bao_hiem",
+      "name": "Vi phạm về mũ bảo hiểm",
+      "description": "Quy định xử phạt vi phạm về mũ bảo hiểm",
+      "article": "Điều 12",
+      "violations": [
+        {
+          "id": "MBH-1",
+          "violation": "Người điều khiển xe máy, xe gắn máy không đội mũ bảo hiểm hoặc đội mũ không đúng cách",
+          "vehicle_type": "xe_may",
+          "vehicle_type_display": "Xe máy, xe gắn máy",
+          "fine_min": 400000,
+          "fine_max": 600000,
+          "license_suspension_months": null,
+          "points_deducted": 0,
+          "keywords": ["mũ bảo hiểm", "không đội mũ", "mũ bảo hiểm xe máy"]
+        },
+        {
+          "id": "MBH-2",
+          "violation": "Chở người ngồi trên xe không đội mũ bảo hiểm",
+          "vehicle_type": "xe_may",
+          "vehicle_type_display": "Xe máy, xe gắn máy",
+          "fine_min": 400000,
+          "fine_max": 600000,
+          "license_suspension_months": null,
+          "points_deducted": 0,
+          "keywords": ["mũ bảo hiểm", "người ngồi sau", "không đội mũ"]
+        }
+      ]
+    }
+  ],
+  "license_point_system": {
+    "description": "Hệ thống trừ điểm GPLX theo Luật Trật tự ATGT đường bộ 2024",
+    "effective_date": "2025-01-01",
+    "total_points": 12,
+    "rules": [
+      {
+        "rule": "Mỗi GPLX có 12 điểm trong 1 năm (tính theo năm dương lịch)",
+        "details": "Điểm được tính từ ngày 01/01 đến ngày 31/12 hàng năm"
+      },
+      {
+        "rule": "Khi vi phạm, ngoài tiền phạt còn bị trừ điểm vào GPLX",
+        "details": "Số điểm trừ tùy theo mức độ vi phạm, từ 1 đến 12 điểm"
+      },
+      {
+        "rule": "Nếu bị trừ hết 12 điểm, GPLX hết hiệu lực",
+        "details": "Người lái xe phải thi sát hạch lại kiến thức pháp luật sau ít nhất 6 tháng"
+      },
+      {
+        "rule": "Nếu trong 12 tháng không bị trừ hết điểm, điểm được phục hồi về 12",
+        "details": "Điểm tự động phục hồi vào ngày 01/01 năm kế tiếp"
+      }
+    ],
+    "point_deduction_levels": [
+      {"points": 2, "violations": ["Vượt tốc độ 10-20 km/h", "Sử dụng điện thoại khi lái xe"]},
+      {"points": 4, "violations": ["Vượt đèn đỏ", "Đi ngược chiều", "Vượt tốc độ 20-35 km/h", "Nồng độ cồn mức 1"]},
+      {"points": 6, "violations": ["Vượt tốc độ trên 35 km/h", "Lạng lách đánh võng", "Nồng độ cồn mức 2"]},
+      {"points": 12, "violations": ["Nồng độ cồn mức cao nhất", "Gây tai nạn nghiêm trọng", "Đua xe trái phép"]}
+    ]
+  },
+  "speed_limits": {
+    "description": "Quy định tốc độ tối đa theo Luật GTĐB 2024",
+    "urban": {
+      "xe_may": 50,
+      "oto_con": 60,
+      "oto_tai": 50,
+      "xe_khach": 50
+    },
+    "rural": {
+      "xe_may": 60,
+      "oto_con": 90,
+      "oto_tai": 80,
+      "xe_khach": 80
+    },
+    "highway": {
+      "oto_con": 120,
+      "oto_tai": 90,
+      "xe_khach": 90
+    },
+    "notes": [
+      "Tốc độ có thể giảm theo biển báo",
+      "Khi thời tiết xấu (mưa, sương mù) phải giảm tốc độ",
+      "Qua khu vực đông người phải giảm tốc độ"
+    ]
+  }
+}

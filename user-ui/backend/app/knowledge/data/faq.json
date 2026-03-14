@@ -1,0 +1,131 @@
+{
+  "metadata": {
+    "title": "Câu hỏi thường gặp về Luật An toàn Giao thông",
+    "version": "2025.2",
+    "last_updated": "2025-01-01"
+  },
+  "faqs": [
+    {
+      "id": "faq-1",
+      "question": "Uống bao nhiêu bia thì được lái xe?",
+      "answer": "Theo Nghị định 168/2024, nghiêm cấm điều khiển phương tiện khi có nồng độ cồn trong máu hoặc hơi thở, dù chỉ một lượng nhỏ. Tức là \"ĐÃ UỐNG RƯỢU BIA THÌ KHÔNG LÁI XE\".",
+      "category": "nong_do_con",
+      "keywords": [
+        "bia",
+        "rượu",
+        "uống",
+        "lái xe",
+        "nồng độ cồn"
+      ]
+    },
+    {
+      "id": "faq-2",
+      "question": "Vượt đèn vàng có bị phạt không?",
+      "answer": "Có. Theo quy định, đèn vàng báo hiệu phải dừng lại trước vạch dừng, trừ khi xe đã đi quá vạch dừng thì được tiếp tục đi. Nếu cố tình vượt đèn vàng khi đang ở xa vạch dừng sẽ bị xử phạt như vượt đèn đỏ.",
+      "category": "den_tin_hieu",
+      "keywords": [
+        "đèn vàng",
+        "vượt đèn",
+        "đèn tín hiệu"
+      ]
+    },
+    {
+      "id": "faq-3",
+      "question": "Bằng lái xe máy hạng A1 mới khác gì với A1 cũ?",
+      "answer": "Theo luật mới 2024, bằng A1 chỉ lái xe máy đến 125cm3 (trước đây là 175cm3). Nếu bạn lái xe trên 125cm3 thì cần bằng hạng A. Tuy nhiên, bằng A1 cũ vẫn được dùng bình thường cho xe dưới 175cm3 cho đến khi hết hạn hoặc đổi mới.",
+      "category": "giay_to",
+      "keywords": [
+        "bằng A1",
+        "giấy phép lái xe",
+        "GPLX",
+        "xe máy"
+      ]
+    },
+    {
+      "id": "faq-4",
+      "question": "Bằng A2 cũ giờ đổi thành hạng gì?",
+      "answer": "Theo luật mới, xe máy phân khối lớn (trên 125cm3) sẽ dùng bằng hạng A. Bằng A2 cũ vẫn có giá trị sử dụng bình thường.",
+      "category": "giay_to",
+      "keywords": [
+        "bằng A2",
+        "bằng A",
+        "PKL",
+        "phân khối lớn"
+      ]
+    },
+    {
+      "id": "faq-5",
+      "question": "Tôi đang dùng bằng B1 lái xe số tự động, có phải thi lại không?",
+      "answer": "Không. Bằng B1 (số tự động) cũ vẫn có giá trị sử dụng đến thời hạn ghi trên bằng. Tuy nhiên, theo luật mới, hạng B1 được cấp cho xe mô tô 3 bánh, còn ô tô con sẽ gộp vào hạng B (không phân biệt số sàn/tự động).",
+      "category": "giay_to",
+      "keywords": [
+        "bằng B1",
+        "bằng B",
+        "số tự động",
+        "thi lại"
+      ]
+    },
+    {
+      "id": "faq-6",
+      "question": "Tốc độ tối đa trong thành phố là bao nhiêu?",
+      "answer": "Trong khu vực đô thị: Xe máy tối đa 50 km/h, Ô tô con tối đa 60 km/h, Xe tải và xe khách tối đa 50 km/h.",
+      "category": "toc_do",
+      "keywords": [
+        "tốc độ",
+        "giới hạn",
+        "thành phố",
+        "đô thị",
+        "nội thành"
+      ]
+    },
+    {
+      "id": "faq-7",
+      "question": "Hệ thống trừ điểm GPLX hoạt động thế nào?",
+      "answer": "Mỗi GPLX có 12 điểm/năm. Khi vi phạm các lỗi như nồng độ cồn, vượt đèn đỏ... sẽ bị trừ từ 2-12 điểm. Nếu hết điểm sẽ bị tước bằng. Nếu không bị trừ hết điểm trong 12 tháng, điểm sẽ tự động hồi phục về 12 vào đầu năm sau.",
+      "category": "diem_gplx",
+      "keywords": [
+        "trừ điểm",
+        "điểm GPLX",
+        "hệ thống điểm",
+        "12 điểm"
+      ]
+    },
+    {
+      "id": "faq-8",
+      "question": "Mũ bảo hiểm có bắt buộc phải đạt chuẩn không?",
+      "answer": "Có. Mũ phải có tem hợp quy CR và cài quai đúng quy cách. Đội mũ thời trang không đạt chuẩn có thể bị phạt như không đội mũ.",
+      "category": "mu_bao_hiem",
+      "keywords": [
+        "mũ bảo hiểm",
+        "chuẩn",
+        "hợp chuẩn",
+        "tem"
+      ]
+    },
+    {
+      "id": "faq-9",
+      "question": "Bằng ô tô B2 cũ giờ gọi là gì?",
+      "answer": "Theo luật mới, bằng B2 cũ tương ứng với hạng B mới (lái xe chở người đến 8 chỗ, xe tải đến 3.5 tấn).",
+      "category": "giay_to",
+      "keywords": [
+        "bằng B2",
+        "bằng B",
+        "hạng B",
+        "ô tô"
+      ]
+    },
+    {
+      "id": "faq-10",
+      "question": "Trẻ em ngồi ghế trước ô tô được không?",
+      "answer": "Trẻ em dưới 10 tuổi hoặc cao dưới 1.35m KHÔNG được ngồi ghế trước ô tô (ghế cạnh lái xe). Trẻ dưới 4 tuổi phải có ghế chuyên dụng.",
+      "category": "tre_em",
+      "keywords": [
+        "trẻ em",
+        "ghế trước",
+        "ô tô",
+        "an toàn",
+        "ghế trẻ em"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "video_source": "input_1772620986509.mp4",
+  "processed_at": "2026-03-04T17:43:33.531040",
+  "total_frames": 157,
+  "duration_seconds": 19.62,
+  "fps": 8,
+  "vehicle_counts": {
+    "motorcycle": 3,
+    "car": 8
+  },
+  "total_vehicles": 11,
+  "accidents_detected": 0,
+  "crossing_events": [
+    {
+      "track_id": 1,
+      "class_name": "motorcycle",
+      "x_position": 673.0,
+      "frame_id": 4,
+      "timestamp": 0.5
+    },
+    {
+      "track_id": 2,
+      "class_name": "car",
+      "x_position": 1210.0,
+      "frame_id": 21,
+      "timestamp": 2.625
+    },
+    {
+      "track_id": 61,
+      "class_name": "car",
+      "x_position": 1137.5,
+      "frame_id": 49,
+      "timestamp": 6.125
+    },
+    {
+      "track_id": 48,
+      "class_name": "car",
+      "x_position": 1018.0,
+      "frame_id": 65,
+      "timestamp": 8.125
+    },
+    {
+      "track_id": 85,
+      "class_name": "car",
+      "x_position": 1094.5,
+      "frame_id": 85,
+      "timestamp": 10.625
+    },
+    {
+      "track_id": 91,
+      "class_name": "car",
+      "x_position": 1094.0,
+      "frame_id": 99,
+      "timestamp": 12.375
+    },
+    {
+      "track_id": 109,
+      "class_name": "car",
+      "x_position": 1110.5,
+      "frame_id": 119,
+      "timestamp": 14.875
+    },
+    {
+      "track_id": 112,
+      "class_name": "motorcycle",
+      "x_position": 347.5,
+      "frame_id": 120,
+      "timestamp": 15.0
+    },
+    {
+      "track_id": 131,
+      "class_name": "car",
+      "x_position": 1086.0,
+      "frame_id": 141,
+      "timestamp": 17.625
+    },
+    {
+      "track_id": 126,
+      "class_name": "motorcycle",
+      "x_position": 1479.0,
+      "frame_id": 147,
+      "timestamp": 18.375
+    },
+    {
+      "track_id": 145,
+      "class_name": "car",
+      "x_position": 1080.0,
+      "frame_id": 156,
+      "timestamp": 19.5
+    }
+  ]
+}

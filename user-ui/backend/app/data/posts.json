@@ -1,0 +1,290 @@
+{
+  "posts": [
+    {
+      "id": "post_1738843800000",
+      "author_name": "Minh Tuan",
+      "author_avatar_color": "#3b82f6",
+      "content": "Kẹt xe nghiêm trọng tại ngã tư Lê Duẩn - Phan Chu Trinh. Mọi ngườii nên tránh khu vực này trong giờ cao điểm chiều nay. Có vẻ như do một vụ va chạm nhỏ giữa hai xe máy.",
+      "category": "congestion",
+      "severity": "high",
+      "images": [],
+      "location": "Ngã tư Lê Duẩn - Phan Chu Trinh",
+      "created_at": "2026-02-06T08:30:00.000Z",
+      "likes": 13,
+      "dislikes": 1,
+      "liked_by": [
+        "sess_1770387016896_dz0ctzvq"
+      ],
+      "disliked_by": [],
+      "comments": [
+        {
+          "id": "cmt_1738843860000",
+          "author_name": "Hoang Anh",
+          "author_avatar_color": "#ef4444",
+          "content": "Cảm ơn bạn đã thông báo! Mình sẽ đi đường khác.",
+          "created_at": "2026-02-06T08:31:00.000Z"
+        },
+        {
+          "id": "cmt_1738843920000",
+          "author_name": "Thu Hương",
+          "author_avatar_color": "#22c55e",
+          "content": "Khu vực này thường xuyên kẹt xe vào giờ cao điểm. Cần có biện pháp điều tiết giao thông tốt hơn.",
+          "created_at": "2026-02-06T08:32:00.000Z"
+        }
+      ],
+      "reported_by": [],
+      "reports": 0
+    },
+    {
+      "id": "post_1738840200000",
+      "author_name": "Lan Phương",
+      "author_avatar_color": "#8b5cf6",
+      "content": "Đường Nguyễn Tất Thành vừa được sửa xong, đi lại rất thoải mái. Mặt đường mới rất êm, không còn ổ gà như trước nữa. Đây là tín hiệu tốt cho giao thông khu vực!",
+      "category": "roadwork",
+      "severity": "none",
+      "images": [],
+      "location": "Đường Nguyễn Tất Thành",
+      "created_at": "2026-02-06T07:30:00.000Z",
+      "likes": 24,
+      "dislikes": 0,
+      "liked_by": [],
+      "disliked_by": [],
+      "comments": [
+        {
+          "id": "cmt_1738840260000",
+          "author_name": "Duc Manh",
+          "author_avatar_color": "#f59e0b",
+          "content": "Cuối cùng cũng sửa xong! Chờ lâu quá rồi.",
+          "created_at": "2026-02-06T07:31:00.000Z"
+        }
+      ],
+      "reported_by": [],
+      "reports": 0
+    },
+    {
+      "id": "post_1738836600000",
+      "author_name": "Văn Hùng",
+      "author_avatar_color": "#06b6d4",
+      "content": "Sáng nay trờii mưa lớn, đường Trần Phú bị ngập nước khoảng 30cm. Các phương tiện di chuyển rất khó khăn, đặc biệt là xe máy. Mọi ngườii cẩn thận nhé!",
+      "category": "weather",
+      "severity": "medium",
+      "images": [],
+      "location": "Đường Trần Phú",
+      "created_at": "2026-02-06T06:30:00.000Z",
+      "likes": 18,
+      "dislikes": 2,
+      "liked_by": [],
+      "disliked_by": [],
+      "comments": [],
+      "reported_by": [],
+      "reports": 0
+    },
+    {
+      "id": "post_1738833000000",
+      "author_name": "Mai Linh",
+      "author_avatar_color": "#ec4899",
+      "content": "Thông báo: Đoạn đường Y Jút sẽ bị cấm lưu thông từ 8h-17h ngày mai để thi công cống thoát nước. Mọi ngườii lưu ý chọn đường đi khác nhé.",
+      "category": "roadwork",
+      "severity": "medium",
+      "images": [],
+      "location": "Đường Y Jút",
+      "created_at": "2026-02-06T05:30:00.000Z",
+      "likes": 31,
+      "dislikes": 0,
+      "liked_by": [],
+      "disliked_by": [],
+      "comments": [
+        {
+          "id": "cmt_1738833060000",
+          "author_name": "Quang Huy",
+          "author_avatar_color": "#14b8a6",
+          "content": "Cảm ơn thông tin! Ngày mai mình sẽ đi đường Hai Bà Trưng thay thế.",
+          "created_at": "2026-02-06T05:31:00.000Z"
+        },
+        {
+          "id": "cmt_1738833120000",
+          "author_name": "Thanh Nga",
+          "author_avatar_color": "#f97316",
+          "content": "Sao lại cấm đường giờ cao điểm vậy? Nên thi công ban đêm thì hợp lý hơn.",
+          "created_at": "2026-02-06T05:32:00.000Z"
+        },
+        {
+          "id": "cmt_1738833180000",
+          "author_name": "Minh Tuan",
+          "author_avatar_color": "#3b82f6",
+          "content": "Đồng ý với bạn Nga. Thi công ban đêm sẽ ít ảnh hưởng đến giao thông hơn.",
+          "created_at": "2026-02-06T05:33:00.000Z"
+        }
+      ],
+      "reported_by": [],
+      "reports": 0
+    },
+    {
+      "id": "post_1770387049330_89fbc0",
+      "author_name": "kiet",
+      "author_avatar_color": "#14b8a6",
+      "content": "kẹt xe",
+      "category": "congestion",
+      "severity": "medium",
+      "images": [
+        "/api/static/uploads/img_cfcf03a05633.png"
+      ],
+      "location": "bình chánh",
+      "created_at": "2026-02-06T14:10:49.000Z",
+      "likes": 0,
+      "dislikes": 0,
+      "liked_by": [],
+      "disliked_by": [],
+      "comments": [
+        {
+          "id": "cmt_1770387060448_899586",
+          "author_name": "kiet",
+          "author_avatar_color": "#14b8a6",
+          "content": "như cẹc",
+          "created_at": "2026-02-06T14:11:00.000Z"
+        },
+        {
+          "id": "cmt_1770387064923_0febb7",
+          "author_name": "kiet",
+          "author_avatar_color": "#6366f1",
+          "content": "cùi bắp",
+          "created_at": "2026-02-06T14:11:04.000Z"
+        }
+      ],
+      "reported_by": [],
+      "reports": 0
+    },
+    {
+      "id": "post_1770388711217_f1a727",
+      "author_name": "kiet",
+      "author_avatar_color": "#ec4899",
+      "content": "gffgfg",
+      "category": "general",
+      "severity": "none",
+      "images": [
+        "/api/static/uploads/img_808db838c169.png",
+        "/api/static/uploads/img_dbe31494e504.png"
+      ],
+      "location": "",
+      "created_at": "2026-02-06T14:38:31.000Z",
+      "likes": 0,
+      "dislikes": 0,
+      "liked_by": [],
+      "disliked_by": [],
+      "comments": [
+        {
+          "id": "cmt_1770388718653_5dca08",
+          "author_name": "kiet",
+          "author_avatar_color": "#3b82f6",
+          "content": "fgfgfg",
+          "created_at": "2026-02-06T14:38:38.000Z"
+        }
+      ],
+      "reported_by": [],
+      "reports": 0
+    },
+    {
+      "id": "post_2025021101",
+      "author_name": "Nguyễn Văn A",
+      "author_avatar_color": "#f59e0b",
+      "content": "Vừa xảy ra tai nạn giao thông tại ngã tư Hàng Xanh. Một xe tải và xe máy va chạm, đường bị ùn tắc nghiêm trọng. Các bạn đi đường lưu ý nhé!",
+      "category": "accident",
+      "severity": "high",
+      "images": [],
+      "location": "Ngã tư Hàng Xanh, Bình Thạnh, TP.HCM",
+      "created_at": "2026-02-11T08:30:00.000Z",
+      "likes": 15,
+      "dislikes": 0,
+      "liked_by": [],
+      "disliked_by": [],
+      "comments": [
+        {
+          "id": "cmt_2025021101_01",
+          "author_name": "Trần Thị B",
+          "author_avatar_color": "#22c55e",
+          "content": "Ơn giờii, cảm ơn bạn đã thông báo. Mình đang địch đi qua đó.",
+          "created_at": "2026-02-11T08:35:00.000Z"
+        }
+      ],
+      "reported_by": [],
+      "reports": 0
+    },
+    {
+      "id": "post_2025021102",
+      "author_name": "Lê Minh C",
+      "author_avatar_color": "#06b6d4",
+      "content": "Đường Nguyễn Huệ đang thi công lắp đặt hệ thống chiếu sáng mới. Các bạn đi bộ qua khu vực này cẩn thận nhé, có nhiều dây điện rào chắn.",
+      "category": "roadwork",
+      "severity": "low",
+      "images": [],
+      "location": "Phố đi bộ Nguyễn Huệ, Quận 1, TP.HCM",
+      "created_at": "2026-02-11T09:15:00.000Z",
+      "likes": 8,
+      "dislikes": 0,
+      "liked_by": [],
+      "disliked_by": [],
+      "comments": [],
+      "reported_by": [],
+      "reports": 0
+    },
+    {
+      "id": "post_2025021103",
+      "author_name": "Phạm Thị D",
+      "author_avatar_color": "#ec4899",
+      "content": "Trờii mưa lớn kèm theo sấm sét tại khu vực Hồ Gươm. Đường trơn trượt, tầm nhìn hạn chế. Mọi ngườii chạy xe chậm và bật đèn cảnh báo nhé!",
+      "category": "weather",
+      "severity": "medium",
+      "images": [],
+      "location": "Khu vực Hồ Gươm, Hoàn Kiếm, Hà Nội",
+      "created_at": "2026-02-11T14:20:00.000Z",
+      "likes": 22,
+      "dislikes": 1,
+      "liked_by": [],
+      "disliked_by": [],
+      "comments": [
+        {
+          "id": "cmt_2025021103_01",
+          "author_name": "Hoàng Văn E",
+          "author_avatar_color": "#8b5cf6",
+          "content": "Mình vừa đi qua đó, thật sự rất khó đi. Cảm ơn bạn đã nhắc nhở!",
+          "created_at": "2026-02-11T14:25:00.000Z"
+        }
+      ],
+      "reported_by": [],
+      "reports": 0
+    },
+    {
+      "id": "post_2025021104",
+      "author_name": "Vũ Thanh F",
+      "author_avatar_color": "#3b82f6",
+      "content": "Kẹt xe kinh hoàng tại cầu Sài Gòn! Từ quận 2 sang quận Bình Thạnh mất gần 45 phút. Có vẻ do nhiều ngườii về quê ăn Tết sớm. Khuyến khích mọi ngườii đi sớm hoặc chọn tuyến đường khác.",
+      "category": "congestion",
+      "severity": "high",
+      "images": [],
+      "location": "Cầu Sài Gòn, TP.HCM",
+      "created_at": "2026-02-11T16:45:00.000Z",
+      "likes": 35,
+      "dislikes": 2,
+      "liked_by": [],
+      "disliked_by": [],
+      "comments": [
+        {
+          "id": "cmt_2025021104_01",
+          "author_name": "Đặng Thị G",
+          "author_avatar_color": "#f59e0b",
+          "content": "Thôi xong, mình đang kẹt ở đây nè. Không biết bao giờ mới về được!",
+          "created_at": "2026-02-11T16:50:00.000Z"
+        },
+        {
+          "id": "cmt_2025021104_02",
+          "author_name": "Bùi Văn H",
+          "author_avatar_color": "#22c55e",
+          "content": "Mình khuyên các bạn nên đi qua cầu Thủ Thiêm hoặc hầm Thủ Thiêm để tránh kẹt xe.",
+          "created_at": "2026-02-11T16:55:00.000Z"
+        }
+      ],
+      "reported_by": [],
+      "reports": 0
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "video_source": "input_1773024033370.mp4",
+  "processed_at": "2026-03-09T09:41:11.916574",
+  "total_frames": 154,
+  "duration_seconds": 19.25,
+  "fps": 8,
+  "vehicle_counts": {
+    "motorcycle": 1,
+    "truck": 1,
+    "car": 1
+  },
+  "total_vehicles": 3,
+  "accidents_detected": 0,
+  "crossing_events": [
+    {
+      "track_id": 4,
+      "class_name": "motorcycle",
+      "x_position": 490.0,
+      "frame_id": 28,
+      "timestamp": 3.5
+    },
+    {
+      "track_id": 72,
+      "class_name": "truck",
+      "x_position": 1039.0,
+      "frame_id": 83,
+      "timestamp": 10.375
+    },
+    {
+      "track_id": 83,
+      "class_name": "car",
+      "x_position": 1049.0,
+      "frame_id": 84,
+      "timestamp": 10.5
+    }
+  ]
+}

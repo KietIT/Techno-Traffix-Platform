@@ -1,0 +1,12 @@
+{
+  "zones": [
+    {
+      "id": "buon_ma_thuot",
+      "name": "TP. Buôn Ma Thuột",
+      "province": "Đắk Lắk",
+      "center": { "lat": 12.6976, "lng": 108.0674 },
+      "radius_km": 3.0,
+      "keywords": ["buôn ma thuột", "buôn ma thuộc", "buon ma thuot", "buon ma thuoc", "bmt", "đắk lắk", "dak lak", "đăk lăk"]
+    }
+  ]
+}
