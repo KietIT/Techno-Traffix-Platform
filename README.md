@@ -65,30 +65,55 @@ cd Traffic-Platform
 pip install -r requirements.txt
 ```
 
-### 3. Download YOLO Models
+### 3. Download Models and Datasets
 
-The trained YOLO model weights are hosted on Google Drive. Download them from:
+Model weights and training datasets are hosted on Google Drive:
 
-**[YOLO Models](https://drive.google.com/drive/folders/1QirKN04mXn7teCnd8zldtyfNF1BstSzR?usp=sharing)**
+**[Google Drive — Models & Datasets](https://drive.google.com/drive/folders/1QirKN04mXn7teCnd8zldtyfNF1BstSzR?usp=sharing)**
 
-Place all downloaded `.pt` files into the `video_detection/` directory:
+The Drive contains two folders:
+
+| Folder | Contents |
+|---|---|
+| `Models/` | Trained `.pt` YOLO model weights |
+| `Datasets/` | Annotated training datasets (YOLO + COCO formats) |
+
+#### Download the Models
+
+Open the `Models/` folder in the Drive link and download all `.pt` files, then place them in `video_detection/`:
 
 ```
 video_detection/
-├── vehicle_detection_yolov8l.pt          # General vehicle detection
-├── vehicle_detection_yolov8l_ambulance.pt # Ambulance detection
-├── accident_classification_yolov8l.pt     # Accident classification
-└── traffic_classification_yolov8l.pt      # Traffic state classification
+├── vehicle_detection_yolov8l.pt           # General vehicle detection
+├── vehicle_detection_yolov8l_ambulance.pt  # Ambulance detection
+├── accident_classification_yolov8l.pt      # Accident classification
+└── traffic_classification_yolov8l.pt       # Traffic state classification
 ```
 
-You can download manually from the link above, or use `gdown`:
+Or use `gdown` to download the `Models/` subfolder directly:
 
 ```bash
 pip install gdown
 
-# Download the entire folder (replace FOLDER_ID with the ID from the Drive link)
-gdown --folder https://drive.google.com/drive/folders/1QirKN04mXn7teCnd8zldtyfNF1BstSzR --output video_detection/
+# Download only the Models folder into video_detection/
+gdown --folder "https://drive.google.com/drive/folders/1QirKN04mXn7teCnd8zldtyfNF1BstSzR" --output ./ --remaining-ok
+# Then move the downloaded .pt files into video_detection/
 ```
+
+#### Download the Datasets (optional — for training only)
+
+Open the `Datasets/` folder in the Drive link and download the archives you need. Extract them into `dataset/`:
+
+```
+dataset/
+├── accidents/                           # Accident scene images
+├── ambulance detection.v2i.yolov8/      # Ambulance dataset (YOLO format)
+├── ambulance.v1i.coco/                  # Ambulance dataset (COCO format)
+├── normal/                              # Normal traffic images
+└── traffic_jam/                         # Traffic jam images
+```
+
+> You only need the datasets if you plan to retrain the models. For running the platform, only the `Models/` download is required.
 
 ### 4. Configure environment variables
 
@@ -293,7 +318,9 @@ flake8 user-ui/backend/app/
 
 ## Training
 
-Training scripts and Kaggle notebooks are in `training/`. The main orchestration script is `training/TRAINING_WORKFLOW.py`. Dataset annotations are in YOLO format under `training/datasets/` and COCO format under `dataset/`.
+Training scripts and Kaggle notebooks are in `training/`. The main orchestration script is `training/TRAINING_WORKFLOW.py`.
+
+Dataset annotations (YOLO format under `training/datasets/`, COCO format under `dataset/`) can be downloaded from the `Datasets/` folder in the [Google Drive link](https://drive.google.com/drive/folders/1QirKN04mXn7teCnd8zldtyfNF1BstSzR?usp=sharing) above.
 
 ---
 
