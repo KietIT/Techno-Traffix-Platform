@@ -69,7 +69,7 @@ pip install -r requirements.txt
 
 The trained YOLO model weights are hosted on Google Drive. Download them from:
 
-**[Google Drive — YOLO Models](https://drive.google.com/drive/folders/1QirKN04mXn7teCnd8zldtyfNF1BstSzR?usp=sharing)**
+**[YOLO Models](https://drive.google.com/drive/folders/1QirKN04mXn7teCnd8zldtyfNF1BstSzR?usp=sharing)**
 
 Place all downloaded `.pt` files into the `video_detection/` directory:
 
@@ -126,7 +126,7 @@ Open [http://localhost:5000](http://localhost:5000) in your browser.
 - **Không Khí** — real-time air quality
 - **Cộng Đồng** — community posts feed
 
-The chatbot (NOVA TRAFFIX) answers Vietnamese traffic law questions using RAG + Claude.
+The chatbot (TECHNO TRAFFIX) answers Vietnamese traffic law questions using RAG + Claude.
 
 ---
 
